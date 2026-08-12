@@ -21,12 +21,9 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
-body{
-  background:var(--ink); color:var(--bone); font-family:var(--sans);
-  min-height:100vh; padding-bottom:calc(78px + env(safe-area-inset-bottom));
-  font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased;
-  overscroll-behavior-y:none;
-}
+body{background:var(--ink);color:var(--bone);font-family:var(--sans);min-height:100vh;
+  padding-bottom:calc(78px + env(safe-area-inset-bottom));font-size:15px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none;}
 .strip{display:flex;border-bottom:1px solid var(--line);background:var(--panel);
   position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);}
 .strip-cell{flex:1;padding:10px 12px;border-right:1px solid var(--line-soft);}
@@ -37,17 +34,18 @@ body{
 .strip-sub{font-family:var(--mono);font-size:10px;color:var(--bone-dim);}
 .wrap{max-width:620px;margin:0 auto;padding:16px 14px 24px;}
 h2.sec{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--bone-faint);margin:26px 0 10px;font-weight:600;}
+  color:var(--bone-faint);margin:26px 0 10px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 h2.sec:first-child{margin-top:6px;}
+h2.sec a{color:var(--bone-faint);text-decoration:none;border-bottom:1px dotted var(--line);cursor:pointer;letter-spacing:.1em;}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;}
-.card-head{padding:12px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.card-head{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-titlewrap{flex:1;min-width:0;}
 .card-title{font-size:15px;font-weight:600;letter-spacing:-.01em;}
-.card-target{font-family:var(--mono);font-size:11px;color:var(--bone-faint);white-space:nowrap;}
-.session-banner{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--amber);
-  border-radius:3px;padding:14px;margin-bottom:12px;}
-.session-day{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);}
-.session-name{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:3px;}
-.session-note{font-size:13px;color:var(--bone-dim);margin-top:6px;}
+.card-target{font-family:var(--mono);font-size:11px;color:var(--bone-faint);margin-top:1px;}
+.card-tools{display:flex;gap:3px;flex-shrink:0;}
+.tool{background:none;border:1px solid var(--line);color:var(--bone-faint);border-radius:2px;
+  width:28px;height:28px;font-size:11px;cursor:pointer;line-height:1;padding:0;font-family:var(--mono);}
+.tool.rm{color:var(--alert);border-color:#3A2523;}
 .sets{padding:0 14px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
 .set{background:var(--ink);border:1px solid var(--line);border-radius:2px;padding:5px 8px;
   font-family:var(--mono);font-size:14px;display:flex;align-items:center;gap:5px;}
@@ -58,6 +56,8 @@ h2.sec:first-child{margin-top:6px;}
 .set .u{color:var(--bone-faint);font-size:11px;}
 .addset{background:transparent;border:1px dashed var(--line);color:var(--bone-faint);
   border-radius:2px;padding:7px 13px;font-family:var(--mono);font-size:13px;cursor:pointer;}
+.addex{background:transparent;border:1px dashed var(--line);color:var(--bone-dim);width:100%;
+  border-radius:3px;padding:13px;font-family:var(--mono);font-size:13px;cursor:pointer;margin-bottom:10px;}
 .holdbar{padding:0 14px 14px;}
 .hb-track{position:relative;height:26px;background:var(--ink);border:1px solid var(--line-soft);
   border-radius:2px;overflow:hidden;}
@@ -85,6 +85,11 @@ h2.sec:first-child{margin-top:6px;}
 .tbtns{display:flex;gap:6px;flex-wrap:wrap;}
 .tbtn{background:var(--ink);border:1px solid var(--line);color:var(--bone-dim);font-family:var(--mono);
   font-size:12px;padding:8px 12px;border-radius:2px;cursor:pointer;}
+.session-banner{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--amber);
+  border-radius:3px;padding:14px;margin-bottom:12px;}
+.session-day{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);}
+.session-name{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:3px;}
+.session-note{font-size:13px;color:var(--bone-dim);margin-top:6px;}
 .chart{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px;margin-bottom:10px;}
 .chart svg{display:block;width:100%;overflow:visible;}
 .legend{display:flex;gap:16px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--bone-dim);flex-wrap:wrap;}
@@ -125,12 +130,30 @@ h2.sec:first-child{margin-top:6px;}
 .empty{text-align:center;padding:36px 20px;color:var(--bone-faint);font-size:13px;line-height:1.6;}
 .toast{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:var(--amber);color:#14100A;padding:11px 20px;border-radius:2px;font-size:13px;
-  font-weight:600;z-index:50;}
+  font-weight:600;z-index:60;}
 select{background:var(--panel);border:1px solid var(--line);color:var(--bone);font-family:var(--mono);
   font-size:14px;padding:11px 10px;border-radius:2px;width:100%;outline:none;
   -webkit-appearance:none;appearance:none;}
 textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--bone-dim);
   font-family:var(--mono);font-size:11px;padding:10px;border-radius:2px;height:90px;outline:none;}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,14,19,.86);display:flex;
+  align-items:flex-end;justify-content:center;}
+.sheet{background:var(--ink);border-top:1px solid var(--line);width:100%;max-width:620px;
+  max-height:88vh;display:flex;flex-direction:column;border-radius:6px 6px 0 0;}
+.sheet-head{padding:14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;}
+.sheet-head input{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--bone);
+  font-size:16px;padding:11px 12px;border-radius:2px;outline:none;min-width:0;font-family:var(--sans);}
+.sheet-head input:focus{border-color:var(--amber);}
+.sheet-body{overflow-y:auto;padding:0 14px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;}
+.cat{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--bone-faint);margin:16px 0 4px;font-weight:600;}
+.pick{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;
+  border-bottom:1px solid var(--line-soft);cursor:pointer;}
+.pick-n{font-size:14.5px;font-weight:600;}
+.pick-t{font-family:var(--mono);font-size:11px;color:var(--bone-faint);margin-top:1px;}
+.pick-add{font-family:var(--mono);font-size:18px;color:var(--amber);flex-shrink:0;padding:0 4px;}
+.pick.in .pick-add{color:var(--cyan);}
+.pick.in .pick-n{color:var(--bone-faint);}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
@@ -138,60 +161,126 @@ textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var
 <div class="strip" id="strip"></div>
 <div id="app"></div>
 <div class="tabs" id="tabs"></div>
+<div id="modal"></div>
 
 <script>
-/* ================= program ================= */
+/* ================= exercise library ================= */
 var EX = {
-  handstand:    {n:"Handstand practice",      k:"mins", t:"5–8 min, fresh"},
-  handstandLong:{n:"Handstand practice",      k:"mins", t:"8–10 min"},
-  lean:         {n:"Planche lean",            k:"hold", t:"5 × 12–20s", goal:30, prog:"tuck planche"},
-  tuckP:        {n:"Tuck planche",            k:"hold", t:"5 × 5–8s",   goal:15, prog:"advanced tuck"},
-  pppu:         {n:"Pseudo planche push-up",  k:"reps", t:"4 × 5–8"},
-  hspu:         {n:"Wall HSPU",               k:"reps", t:"4 × 5"},
-  dips:         {n:"Dips",                    k:"reps", t:"3 × 8"},
-  tuckFL:       {n:"Tuck front lever",        k:"hold", t:"5 × 10–15s", goal:15, prog:"advanced tuck"},
-  flNeg:        {n:"Front lever negative",    k:"reps", t:"4 × 3, slow"},
-  wpull:        {n:"Weighted pull-up",        k:"load", t:"5 × 5 · from +10 kg"},
-  bandPull:     {n:"Straight-arm pulldown",   k:"reps", t:"3 × 10"},
-  rows:         {n:"Rows",                    k:"reps", t:"3 × 8"},
-  sternum:      {n:"Sternum-to-bar pull-up",  k:"reps", t:"4 × 3"},
-  muNeg:        {n:"Muscle-up negative",      k:"reps", t:"3 × 2, slow"},
-  kick:         {n:"Kickboxing",              k:"mins", t:"session length"},
-  squat:        {n:"Back squat",              k:"load", t:"4 × 4–5"},
-  rdl:          {n:"Romanian deadlift",       k:"load", t:"3 × 6–8"},
-  bss:          {n:"Bulgarian split squat",   k:"load", t:"3 × 8 / leg"},
-  nordic:       {n:"Nordic / leg curl",       k:"reps", t:"3 × 6"},
-  calf:         {n:"Standing calf raise",     k:"reps", t:"3 × 12"},
-  pullups:      {n:"Pull-ups",                k:"reps", t:"3 × 8 clean"},
-  rows10:       {n:"Rows",                    k:"reps", t:"3 × 10"}
+  /* --- straight-arm skill --- */
+  lean:      {n:"Planche lean",              k:"hold", t:"5 × 12–20s", cat:"Straight-arm", goal:30, prog:"tuck planche"},
+  tuckP:     {n:"Tuck planche",              k:"hold", t:"5 × 5–8s",   cat:"Straight-arm", goal:15, prog:"advanced tuck"},
+  advP:      {n:"Advanced tuck planche",     k:"hold", t:"5 × 5–8s",   cat:"Straight-arm", goal:15, prog:"straddle planche"},
+  strP:      {n:"Straddle planche",          k:"hold", t:"5 × 3–5s",   cat:"Straight-arm", goal:15, prog:"full planche"},
+  tuckFL:    {n:"Tuck front lever",          k:"hold", t:"5 × 10–15s", cat:"Straight-arm", goal:15, prog:"advanced tuck"},
+  advFL:     {n:"Advanced tuck front lever", k:"hold", t:"5 × 8–12s",  cat:"Straight-arm", goal:15, prog:"straddle FL"},
+  strFL:     {n:"Straddle front lever",      k:"hold", t:"5 × 5–10s",  cat:"Straight-arm", goal:15, prog:"full front lever"},
+  fullFL:    {n:"Full front lever",          k:"hold", t:"5 × 3–8s",   cat:"Straight-arm", goal:15, prog:"front lever pulls"},
+  flNeg:     {n:"Front lever negative",      k:"reps", t:"4 × 3, slow", cat:"Straight-arm"},
+  flPull:    {n:"Front lever pull",          k:"reps", t:"4 × 4",      cat:"Straight-arm"},
+  tuckBL:    {n:"Tuck back lever",           k:"hold", t:"4 × 10s",    cat:"Straight-arm", goal:15, prog:"straddle back lever"},
+  strBL:     {n:"Straddle back lever",       k:"hold", t:"4 × 8s",     cat:"Straight-arm", goal:15, prog:"full back lever"},
+  germanH:   {n:"German hang",               k:"hold", t:"3 × 20–30s", cat:"Straight-arm", goal:30, prog:"back lever work"},
+  bandPull:  {n:"Straight-arm pulldown",     k:"reps", t:"3 × 10",     cat:"Straight-arm"},
+
+  /* --- push / shoulders --- */
+  pppu:      {n:"Pseudo planche push-up",    k:"reps", t:"4 × 5–8",    cat:"Push"},
+  hspu:      {n:"Wall HSPU",                 k:"reps", t:"4 × 5",      cat:"Push"},
+  hspuDef:   {n:"Deficit wall HSPU",         k:"reps", t:"4 × 4–6",    cat:"Push"},
+  freeHSPU:  {n:"Freestanding HSPU",         k:"reps", t:"4 × 3",      cat:"Push"},
+  pike:      {n:"Pike push-up",              k:"reps", t:"3 × 8–10",   cat:"Push"},
+  ringSup:   {n:"Ring support hold",         k:"hold", t:"3 × 20–30s", cat:"Push", goal:60, prog:"turned-out support"},
+  rto:       {n:"Ring turned-out support",   k:"hold", t:"3 × 15–20s", cat:"Push", goal:45, prog:"ring dips"},
+  latRaise:  {n:"Lateral raise",             k:"load", t:"3 × 12–15",  cat:"Push"},
+  ohp:       {n:"Overhead press",            k:"load", t:"4 × 6",      cat:"Push"},
+
+  /* --- chest --- */
+  wdips:     {n:"Weighted dips",             k:"load", t:"4 × 6–8",    cat:"Chest"},
+  dips:      {n:"Dips",                      k:"reps", t:"3 × 8",      cat:"Chest"},
+  ringDip:   {n:"Ring dips",                 k:"reps", t:"4 × 6–8",    cat:"Chest"},
+  ringPU:    {n:"Ring push-ups",             k:"reps", t:"3 × 8–12",   cat:"Chest"},
+  archer:    {n:"Archer push-up",            k:"reps", t:"3 × 6 / side", cat:"Chest"},
+  defPU:     {n:"Deficit push-up",           k:"reps", t:"3 × 10–12",  cat:"Chest"},
+  declPU:    {n:"Decline push-up",           k:"reps", t:"3 × 12",     cat:"Chest"},
+  pushup:    {n:"Push-ups",                  k:"reps", t:"3 × 15–20",  cat:"Chest"},
+  ringFly:   {n:"Ring flye",                 k:"reps", t:"3 × 8",      cat:"Chest"},
+  oapu:      {n:"One-arm push-up progression", k:"reps", t:"3 × 3–5 / side", cat:"Chest"},
+  bench:     {n:"Bench press",               k:"load", t:"4 × 6–8",    cat:"Chest"},
+
+  /* --- pull --- */
+  wpull:     {n:"Weighted pull-up",          k:"load", t:"5 × 5 · from +10 kg", cat:"Pull"},
+  pullups:   {n:"Pull-ups",                  k:"reps", t:"3 × 8 clean", cat:"Pull"},
+  sternum:   {n:"Sternum-to-bar pull-up",    k:"reps", t:"4 × 3",      cat:"Pull"},
+  muNeg:     {n:"Muscle-up negative",        k:"reps", t:"3 × 2, slow", cat:"Pull"},
+  mu:        {n:"Muscle-up",                 k:"reps", t:"4 × 2–3",    cat:"Pull"},
+  rows:      {n:"Rows",                      k:"reps", t:"3 × 8",      cat:"Pull"},
+  ringRow:   {n:"Ring row",                  k:"reps", t:"3 × 10",     cat:"Pull"},
+  oapull:    {n:"One-arm pull-up progression", k:"reps", t:"4 × 3 / side", cat:"Pull"},
+  scapPull:  {n:"Scapular pull-up",          k:"reps", t:"3 × 10",     cat:"Pull"},
+  curls:     {n:"Biceps curl",               k:"load", t:"3 × 10",     cat:"Pull"},
+
+  /* --- handstand --- */
+  handstand:    {n:"Handstand practice",     k:"mins", t:"5–8 min, fresh", cat:"Handstand"},
+  handstandLong:{n:"Handstand practice",     k:"mins", t:"8–10 min",   cat:"Handstand"},
+  hsHold:    {n:"Freestanding handstand",    k:"hold", t:"best hold",  cat:"Handstand", goal:60, prog:"HS push-ups"},
+  wallHS:    {n:"Wall handstand hold",       k:"hold", t:"3 × 45–60s", cat:"Handstand", goal:60, prog:"freestanding"},
+  wristPrep: {n:"Wrist prep",                k:"mins", t:"5 min",      cat:"Handstand"},
+
+  /* --- core --- */
+  lsit:      {n:"L-sit",                     k:"hold", t:"4 × 15–20s", cat:"Core", goal:30, prog:"V-sit"},
+  vsit:      {n:"V-sit",                     k:"hold", t:"4 × 5–10s",  cat:"Core", goal:15, prog:"manna work"},
+  hollow:    {n:"Hollow body hold",          k:"hold", t:"3 × 30s",    cat:"Core", goal:60, prog:"add load"},
+  dragonFlag:{n:"Dragon flag",               k:"reps", t:"3 × 5",      cat:"Core"},
+  toesBar:   {n:"Toes to bar",               k:"reps", t:"3 × 10",     cat:"Core"},
+  abWheel:   {n:"Ab wheel rollout",          k:"reps", t:"3 × 8",      cat:"Core"},
+  plank:     {n:"Plank",                     k:"hold", t:"3 × 45s",    cat:"Core", goal:90, prog:"weighted plank"},
+
+  /* --- legs --- */
+  squat:     {n:"Back squat",                k:"load", t:"4 × 4–5",    cat:"Legs"},
+  frontSq:   {n:"Front squat",               k:"load", t:"4 × 5",      cat:"Legs"},
+  rdl:       {n:"Romanian deadlift",         k:"load", t:"3 × 6–8",    cat:"Legs"},
+  bss:       {n:"Bulgarian split squat",     k:"load", t:"3 × 8 / leg", cat:"Legs"},
+  nordic:    {n:"Nordic / leg curl",         k:"reps", t:"3 × 6",      cat:"Legs"},
+  calf:      {n:"Standing calf raise",       k:"reps", t:"3 × 12",     cat:"Legs"},
+  pistol:    {n:"Pistol squat",              k:"reps", t:"3 × 5 / leg", cat:"Legs"},
+  lunge:     {n:"Walking lunge",             k:"load", t:"3 × 10 / leg", cat:"Legs"},
+  hipThrust: {n:"Hip thrust",                k:"load", t:"3 × 8",      cat:"Legs"},
+
+  /* --- conditioning --- */
+  kick:      {n:"Kickboxing",                k:"mins", t:"session length", cat:"Conditioning"},
+  run:       {n:"Run",                       k:"mins", t:"duration",   cat:"Conditioning"},
+  bike:      {n:"Bike",                      k:"mins", t:"duration",   cat:"Conditioning"},
+  rope:      {n:"Jump rope",                 k:"mins", t:"duration",   cat:"Conditioning"},
+  mobility:  {n:"Mobility / stretching",     k:"mins", t:"duration",   cat:"Conditioning"}
 };
+var CATS = ["Straight-arm","Push","Chest","Pull","Handstand","Core","Legs","Conditioning"];
+
 var SESSIONS = {
-  planche:{name:"Planche + Push", note:"Skill holds first. Stop two seconds before form breaks.",
-    ex:["handstand","lean","tuckP","pppu","hspu","dips"]},
+  planche:{name:"Planche + Push + Chest", note:"Skill holds first. Chest work after — never before the planche sets.",
+    ex:["handstand","lean","tuckP","pppu","hspu","wdips","ringPU"]},
   lever:{name:"Front Lever + Pull", note:"Straight-arm work fresh, then heavy pulling.",
     ex:["tuckFL","flNeg","wpull","bandPull","rows","sternum","muNeg"]},
   kickbox:{name:"Kickboxing", note:"Just log that it happened.", ex:["kick"]},
   legs:{name:"Legs — heavy squat", note:"Top sets 4–5 reps. Cut split squats if legs feel hammered.",
     ex:["squat","rdl","bss","nordic","calf"]},
   full:{name:"Full body + handstand", note:"Quality day, not a hard day. Nothing to failure.",
-    ex:["handstandLong","tuckP","tuckFL","sternum","muNeg","pullups","dips","rows10"]},
-  rest:{name:"Rest day", note:"Wrist and shoulder prep only. Two full rest days is the floor.", ex:[]}
+    ex:["handstandLong","tuckP","tuckFL","sternum","muNeg","pullups","ringDip","rows"]},
+  rest:{name:"Rest day", note:"Wrist and shoulder prep only. Two full rest days is the floor.", ex:[]},
+  custom:{name:"Custom session", note:"Build whatever you want. Skill holds first if any are in it.", ex:[]}
 };
+
 var WEEK = ["rest","planche","lever","kickbox","legs","full","full"];
 var DAYNAME = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var TARGET_KG=84, START_KG=74, KCAL=2900, STORE="straightarm.v1";
 
 /* ================= state ================= */
-var S = {weights:[], sessions:[]};
-var tab="today", log={}, sessType=null, timerLeft=0, timerId=null;
+var S = {weights:[], sessions:[], templates:{}};
+var tab="today", log={}, sessType=null, timerLeft=0, timerId=null, picker=false;
 
 function loadState(){
   try{ var r=localStorage.getItem(STORE); if(r){ var p=JSON.parse(r);
-    S.weights=p.weights||[]; S.sessions=p.sessions||[]; } }catch(e){}
+    S.weights=p.weights||[]; S.sessions=p.sessions||[]; S.templates=p.templates||{}; } }catch(e){}
 }
-function saveState(){
-  try{ localStorage.setItem(STORE,JSON.stringify(S)); return true; }catch(e){ return false; }
-}
+function saveState(){ try{ localStorage.setItem(STORE,JSON.stringify(S)); return true; }catch(e){ return false; } }
 
 /* ================= helpers ================= */
 function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -204,7 +293,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 function regression(pts){
   if(pts.length<4) return null;
-  var n=pts.length, mx=0,my=0,i;
+  var n=pts.length,mx=0,my=0,i;
   for(i=0;i<n;i++){mx+=pts[i].x;my+=pts[i].y;} mx/=n; my/=n;
   var num=0,den=0;
   for(i=0;i<n;i++){num+=(pts[i].x-mx)*(pts[i].y-my);den+=Math.pow(pts[i].x-mx,2);}
@@ -213,8 +302,8 @@ function regression(pts){
 }
 function bestHold(key){
   var b=0;
-  S.sessions.forEach(function(s){ var arr=(s.ex||{})[key]; if(!arr) return;
-    arr.forEach(function(x){ var v=parseFloat(x.v)||0; if(v>b) b=v; }); });
+  S.sessions.forEach(function(s){ var a=(s.ex||{})[key]; if(!a) return;
+    a.forEach(function(x){ var v=parseFloat(x.v)||0; if(v>b) b=v; }); });
   return b;
 }
 function rateNow(){
@@ -225,8 +314,14 @@ function toast(m){
   var t=document.createElement("div"); t.className="toast"; t.textContent=m;
   document.body.appendChild(t); setTimeout(function(){t.remove();},1600);
 }
+function exList(type){
+  if(S.templates[type]) return S.templates[type].slice();
+  return (SESSIONS[type]||{ex:[]}).ex.slice();
+}
+function setList(type,arr){ S.templates[type]=arr.slice(); saveState(); }
+function isEdited(type){ return !!S.templates[type]; }
 
-/* ================= views ================= */
+/* ================= today ================= */
 function holdBar(id){
   var e=EX[id], best=bestHold(id), pct=Math.min(100,best/e.goal*100), ticks="";
   for(var i=5;i<e.goal;i+=5) ticks+='<div class="hb-tick" style="left:'+(i/e.goal*100)+'%"></div>';
@@ -238,8 +333,9 @@ function holdBar(id){
     (best>=e.goal?'<div class="hb-msg">Threshold hit. Hold 3 × '+e.goal+'s clean on two separate sessions, then step up.</div>':'')+
     '</div>';
 }
-function exRow(id){
-  var e=EX[id], sets=log[id]||[], unit=e.k==="hold"?"s":e.k==="mins"?"min":e.k==="load"?"":"reps", h="";
+function exRow(id,idx,total){
+  var e=EX[id]; if(!e) return "";
+  var sets=log[id]||[], unit=e.k==="hold"?"s":e.k==="mins"?"min":e.k==="load"?"":"reps", h="";
   sets.forEach(function(s,i){
     h+='<div class="set"><input inputmode="decimal" data-ex="'+id+'" data-i="'+i+'" data-f="v" value="'+esc(s.v)+'" placeholder="–">'+
       '<span class="u">'+unit+'</span>';
@@ -247,42 +343,80 @@ function exRow(id){
     h+='<span class="set-x" data-act="delset" data-ex="'+id+'" data-i="'+i+'">×</span></div>';
   });
   h+='<button class="addset" data-act="addset" data-ex="'+id+'">+ set</button>';
-  return '<div class="card"><div class="card-head"><div class="card-title">'+e.n+'</div>'+
-    '<div class="card-target">'+e.t+'</div></div><div class="sets">'+h+'</div>'+
+  return '<div class="card"><div class="card-head">'+
+    '<div class="card-titlewrap"><div class="card-title">'+e.n+'</div>'+
+    '<div class="card-target">'+e.t+'</div></div><div class="card-tools">'+
+    (idx>0?'<button class="tool" data-act="up" data-ex="'+id+'">&#9650;</button>':'')+
+    (idx<total-1?'<button class="tool" data-act="down" data-ex="'+id+'">&#9660;</button>':'')+
+    '<button class="tool rm" data-act="rmex" data-ex="'+id+'">&#10005;</button>'+
+    '</div></div><div class="sets">'+h+'</div>'+
     (e.k==="hold"?holdBar(id):'')+'</div>';
 }
 function viewToday(){
   var dow=new Date().getDay();
   if(sessType===null) sessType=WEEK[dow];
-  var sess=SESSIONS[sessType], wT=null;
+  var sess=SESSIONS[sessType], list=exList(sessType), wT=null;
   S.weights.forEach(function(x){ if(x.d===today()) wT=x; });
   var opts="";
   for(var k in SESSIONS) opts+='<option value="'+k+'"'+(k===sessType?" selected":"")+'>'+SESSIONS[k].name+'</option>';
 
   var h='<div class="wrap"><div class="session-banner">'+
-    '<div class="session-day">'+DAYNAME[dow]+' · '+fmtDate(today())+'</div>'+
+    '<div class="session-day">'+DAYNAME[dow]+' &middot; '+fmtDate(today())+'</div>'+
     '<div class="session-name">'+sess.name+'</div>'+
     '<div class="session-note">'+sess.note+'</div></div>'+
     '<select id="sessSel">'+opts+'</select>'+
-    '<h2 class="sec">Morning weight</h2><div class="wrow">'+
+    '<h2 class="sec"><span>Morning weight</span></h2><div class="wrow">'+
     '<input id="wIn" inputmode="decimal" placeholder="'+(wT?wT.kg+" kg logged":"kg")+'">'+
     '<button class="btn sm" data-act="savew">Save</button></div>'+
     '<div class="muted" style="margin-top:6px;font-family:var(--mono);font-size:11px">'+
-    'Target '+KCAL+' kcal · 130–140 g protein · goal '+TARGET_KG+' kg</div>';
+    'Target '+KCAL+' kcal &middot; 130&ndash;140 g protein &middot; goal '+TARGET_KG+' kg</div>'+
+    '<h2 class="sec"><span>Session</span>'+
+    (isEdited(sessType)?'<a data-act="resetsess">reset to default</a>':'')+'</h2>';
 
-  if(sess.ex.length){
-    h+='<h2 class="sec">Session</h2><div class="timer"><div class="timer-val" id="tv">0:00</div>'+
+  if(list.length){
+    h+='<div class="timer"><div class="timer-val" id="tv">0:00</div>'+
       '<div class="tbtns"><button class="tbtn" data-act="t" data-s="90">90s</button>'+
       '<button class="tbtn" data-act="t" data-s="120">2 min</button>'+
       '<button class="tbtn" data-act="t" data-s="180">3 min</button>'+
       '<button class="tbtn" data-act="t" data-s="0">stop</button></div></div>';
-    sess.ex.forEach(function(id){ h+=exRow(id); });
-    h+='<button class="btn" data-act="savesess" style="margin-top:6px">Save session</button>';
-  } else {
-    h+='<div class="empty">Rest day. Wrist and shoulder prep, easy handstand if you feel like it.<br>Nothing to log.</div>';
+    list.forEach(function(id,i){ h+=exRow(id,i,list.length); });
   }
+  h+='<button class="addex" data-act="openpick">+ Add exercise</button>';
+  if(list.length) h+='<button class="btn" data-act="savesess">Save session</button>';
+  else h+='<div class="empty">Nothing in this session yet. Add exercises above, or leave it empty if this is a rest day.</div>';
   return h+'</div>';
 }
+
+/* ================= picker ================= */
+function pickerList(q){
+  var list=exList(sessType), h="", ql=(q||"").toLowerCase();
+  CATS.forEach(function(c){
+    var rows="";
+    for(var id in EX){
+      var e=EX[id]; if(e.cat!==c) continue;
+      if(ql && e.n.toLowerCase().indexOf(ql)<0 && c.toLowerCase().indexOf(ql)<0) continue;
+      var inIt=list.indexOf(id)>=0;
+      rows+='<div class="pick'+(inIt?" in":"")+'" data-act="pickex" data-ex="'+id+'">'+
+        '<div><div class="pick-n">'+e.n+'</div><div class="pick-t">'+e.t+'</div></div>'+
+        '<div class="pick-add">'+(inIt?"&#10003;":"+")+'</div></div>';
+    }
+    if(rows) h+='<div class="cat">'+c+'</div>'+rows;
+  });
+  return h||'<div class="empty">Nothing matches that.</div>';
+}
+function renderModal(){
+  var m=document.getElementById("modal");
+  if(!picker){ m.innerHTML=""; return; }
+  m.innerHTML='<div class="modal" data-act="closepickbg"><div class="sheet">'+
+    '<div class="sheet-head"><input id="pq" placeholder="Search exercises" autocomplete="off">'+
+    '<button class="btn ghost sm" data-act="closepick">Done</button></div>'+
+    '<div class="sheet-body" id="pbody">'+pickerList("")+'</div></div></div>';
+  document.getElementById("pq").addEventListener("input",function(){
+    document.getElementById("pbody").innerHTML=pickerList(this.value);
+  });
+}
+
+/* ================= trends ================= */
 function weightChart(){
   var pts=S.weights.filter(function(x){return daysAgo(x.d)<=90;});
   if(pts.length<2) return '<div class="chart"><div class="empty" style="padding:24px 0">Two weigh-ins needed before the line means anything.</div></div>';
@@ -308,8 +442,8 @@ function weeklyHolds(){
   S.sessions.forEach(function(s){
     var wk=Math.floor(daysAgo(s.d)/7); if(wk>11||wk<0) return;
     ["tuckP","tuckFL"].forEach(function(k){
-      var arr=(s.ex||{})[k]; if(!arr) return;
-      var b=Math.max.apply(null,arr.map(function(x){return parseFloat(x.v)||0;}));
+      var a=(s.ex||{})[k]; if(!a) return;
+      var b=Math.max.apply(null,a.map(function(x){return parseFloat(x.v)||0;}));
       m[wk]=m[wk]||{}; if(b>(m[wk][k]||0)) m[wk][k]=b;
     });
   });
@@ -318,7 +452,7 @@ function weeklyHolds(){
 function holdChart(m){
   var any=false; for(var q in m) any=true;
   if(!any) return '<div class="chart"><div class="empty" style="padding:24px 0">Log tuck planche and tuck front lever holds. This chart is your early warning that bodyweight is outrunning your strength.</div></div>';
-  var W=320,H=100,P=4, vals=[20];
+  var W=320,H=100,P=4,vals=[20];
   for(var w in m) for(var k in m[w]) vals.push(m[w][k]);
   var max=Math.max.apply(null,vals);
   var X=function(i){return P+(i/11)*(W-2*P);};
@@ -341,7 +475,6 @@ function viewTrends(){
   var cur=S.weights.length?S.weights[S.weights.length-1].kg:null;
   var l7=S.weights.filter(function(x){return daysAgo(x.d)<=7;});
   var avg7=l7.length?l7.reduce(function(a,x){return a+x.kg;},0)/l7.length:null;
-
   function trend(k){
     var r=[0,1].map(function(w){return m[w]&&m[w][k];}).filter(Boolean);
     var p=[2,3].map(function(w){return m[w]&&m[w][k];}).filter(Boolean);
@@ -361,15 +494,14 @@ function viewTrends(){
   function st(k,v,u){ return '<div class="stat"><div class="strip-k">'+k+'</div><div class="strip-v">'+v+'</div><div class="strip-sub">'+u+'</div></div>'; }
 
   var h='<div class="wrap"><div class="flag '+f.c+'"><span class="flag-k">'+f.k+'</span>'+f.t+'</div>'+
-    '<h2 class="sec">Bodyweight · '+START_KG+' → '+TARGET_KG+' kg</h2>'+weightChart()+
+    '<h2 class="sec"><span>Bodyweight &middot; '+START_KG+' &rarr; '+TARGET_KG+' kg</span></h2>'+weightChart()+
     '<div class="stats">'+
       st("Latest",cur!==null?cur.toFixed(1):"–","kg")+
       st("7-day avg",avg7!==null?avg7.toFixed(1):"–","kg")+
       st("Rate",rate!==null?(rate>0?"+":"")+rate.toFixed(2):"–","kg/wk")+
       st("To go",toGo!==null?toGo.toFixed(1):"–",eta?"kg · ~"+eta+" wk":"kg")+
-    '</div><h2 class="sec">Weekly best holds</h2>'+holdChart(m)+
-    '<h2 class="sec">Recent sessions</h2>';
-
+    '</div><h2 class="sec"><span>Weekly best holds</span></h2>'+holdChart(m)+
+    '<h2 class="sec"><span>Recent sessions</span></h2>';
   if(!S.sessions.length) h+='<div class="empty">No sessions yet.</div>';
   S.sessions.slice().reverse().slice(0,20).forEach(function(s){
     var parts=[];
@@ -383,40 +515,49 @@ function viewTrends(){
   });
   return h+'</div>';
 }
+
+/* ================= plan ================= */
 function viewPlan(){
   var days=[
-    ["Mon","Planche + push","Handstand → planche lean → tuck planche → PPPU → wall HSPU → dips"],
-    ["Tue","Front lever + pull","Tuck FL → FL negatives → weighted pull-ups → band pulldown → rows → muscle-up work"],
+    ["Mon","Planche + push + chest","Handstand &rarr; planche lean &rarr; tuck planche &rarr; PPPU &rarr; wall HSPU &rarr; weighted dips &rarr; ring push-ups"],
+    ["Tue","Front lever + pull","Tuck FL &rarr; FL negatives &rarr; weighted pull-ups &rarr; band pulldown &rarr; rows &rarr; muscle-up work"],
     ["Wed","Kickboxing","Fixed. Never squat within 24h before this."],
-    ["Thu","Legs","Back squat 4×4–5 → RDL → split squat → nordic → calf. No heavy conventional deadlifts."],
-    ["Fri–Sun","One full body day","Saturday if you get the choice, then Friday, then Sunday. Zero is a fine answer."]
+    ["Thu","Legs","Back squat 4&times;4&ndash;5 &rarr; RDL &rarr; split squat &rarr; nordic &rarr; calf. No heavy conventional deadlifts."],
+    ["Fri&ndash;Sun","One full body day","Saturday if you get the choice, then Friday, then Sunday. Zero is a fine answer."]
   ];
   var rules=[
-    ["01","Skill holds go first in every session, always. Never bolt them onto the end because the day got compressed."],
-    ["02","Stop each hold two seconds before form breaks. Never to failure — tendons adapt far slower than muscle."],
-    ["03","Straight sets with 2–3 min rest for holds and heavy lifts. Circuits only for the accessories at the end."],
-    ["04","Step up a progression only after 3 × 15s clean on two separate sessions."],
-    ["05","Deload every 6–8 weeks: halve the skill sets for one week."],
+    ["01","Skill holds go first in every session, always. Chest and pressing work comes after, never before."],
+    ["02","Stop each hold two seconds before form breaks. Never to failure &mdash; tendons adapt far slower than muscle."],
+    ["03","Straight sets with 2&ndash;3 min rest for holds and heavy lifts. Circuits only for the accessories at the end."],
+    ["04","Step up a progression only after 3 &times; 15s clean on two separate sessions."],
+    ["05","Deload every 6&ndash;8 weeks: halve the skill sets for one week."],
     ["06","If elbows or inner biceps start talking, halve planche lean and front lever volume for two weeks."],
     ["07","Cap the weekend at one session. Two full rest days is the floor."],
     ["08","Don't stack a missed session onto another day."]
   ];
-  var h='<div class="wrap"><h2 class="sec">Fixed week</h2><div class="card" style="padding:4px 14px 8px">';
+  var h='<div class="wrap"><h2 class="sec"><span>Fixed week</span></h2><div class="card" style="padding:4px 14px 8px">';
   days.forEach(function(d){ h+='<div class="plan-day"><div class="plan-d">'+d[0]+'</div><div>'+
     '<div class="plan-t">'+d[1]+'</div><div class="plan-s">'+d[2]+'</div></div></div>'; });
-  h+='</div><h2 class="sec">Rules that decide whether this works</h2><div class="card" style="padding:4px 14px 8px">';
+  h+='</div><h2 class="sec"><span>Rules that decide whether this works</span></h2><div class="card" style="padding:4px 14px 8px">';
   rules.forEach(function(r){ h+='<div class="rule"><span class="rule-n">'+r[0]+'</span><span>'+r[1]+'</span></div>'; });
-  h+='</div><h2 class="sec">Eating</h2><div class="card" style="padding:14px"><div class="muted">'+
-    '<b>'+KCAL+' kcal, 130–140 g protein.</b> Weigh in a few mornings a week and use the weekly average — '+
+  h+='</div><h2 class="sec"><span>Chest without stealing from planche</span></h2><div class="card" style="padding:14px"><div class="muted">'+
+    'Dips and planche both load the anterior shoulder and the biceps tendon, so your chest volume is capped by what '+
+    'the shoulder can recover from &mdash; not by what the chest could handle on its own.'+
+    '<br><br><b>One heavy vertical press:</b> weighted dips 4 &times; 6&ndash;8. This is the main chest lift now, not an afterthought at the end.'+
+    '<br><br><b>One horizontal press:</b> ring push-ups or archer push-ups, 3 &times; 8. Rings let the shoulder find its own path, '+
+    'which matters when the same joint is doing planche work an hour earlier.'+
+    '<br><br>Both go <b>after</b> the skill holds. If your planche lean or tuck hold drops after two weeks of the added '+
+    'chest volume, the chest work is the thing to cut &mdash; not the skill work.'+
+    '</div></div><h2 class="sec"><span>Eating</span></h2><div class="card" style="padding:14px"><div class="muted">'+
+    '<b>'+KCAL+' kcal, 130&ndash;140 g protein.</b> Weigh in a few mornings a week and use the weekly average &mdash; '+
     'the daily number is noise. Settle around 0.3 kg/week and '+TARGET_KG+' kg arrives in four to five months.'+
-    '<br><br>Carbs higher on Wednesday and Thursday for kickboxing and the squat. After years of making weight '+
-    'for karting, the useful skill now is eating well without tracking every gram — the trend line does the work.'+
-    '</div></div><h2 class="sec">Progression map</h2><div class="card" style="padding:14px"><div class="muted">'+
-    '<b>Front lever:</b> tuck → advanced tuck (one knee out) → straddle → full. Straddle is realistically 6–12 months from tuck.'+
-    '<br><br><b>Planche:</b> lean 30s → tuck → advanced tuck → straddle. Straddle often takes 18+ months. That is normal, not slow.'+
+    '<br><br>Carbs higher on Wednesday and Thursday for kickboxing and the squat.'+
+    '</div></div><h2 class="sec"><span>Progression map</span></h2><div class="card" style="padding:14px"><div class="muted">'+
+    '<b>Front lever:</b> tuck &rarr; advanced tuck (one knee out) &rarr; straddle &rarr; full. Straddle is realistically 6&ndash;12 months from tuck.'+
+    '<br><br><b>Planche:</b> lean 30s &rarr; tuck &rarr; advanced tuck &rarr; straddle. Straddle often takes 18+ months. That is normal, not slow.'+
     '<br><br><b>Muscle-up:</b> the kip hides a transition weakness. Sternum-to-bar pull-ups and slow negatives fix it faster than more kipping reps.'+
-    '</div></div><h2 class="sec">Backup</h2><div class="card" style="padding:14px">'+
-    '<div class="muted" style="margin-bottom:10px">Everything is stored on this device only. Copy this out before clearing browser data or switching phones.</div>'+
+    '</div></div><h2 class="sec"><span>Backup</span></h2><div class="card" style="padding:14px">'+
+    '<div class="muted" style="margin-bottom:10px">Stored on this device only &mdash; includes your custom session layouts. Copy this out before clearing browser data or switching phones.</div>'+
     '<textarea id="io" readonly>'+esc(JSON.stringify(S))+'</textarea>'+
     '<div style="display:flex;gap:8px;margin-top:8px">'+
     '<button class="btn ghost sm" data-act="copy">Copy backup</button>'+
@@ -433,12 +574,12 @@ function renderStrip(){
       (cur!==null?cur.toFixed(1):"–")+'</div><div class="strip-sub">'+
       (r!==null?(r>0?"+":"")+r.toFixed(2)+" kg/wk":"kg")+'</div></div>'+
     '<div class="strip-cell"><div class="strip-k">Tuck planche</div><div class="strip-v">'+
-      (bp||"–")+'<span class="u">s</span></div><div class="strip-sub">best · 15s step</div></div>'+
+      (bp||"–")+'<span class="u">s</span></div><div class="strip-sub">best &middot; 15s step</div></div>'+
     '<div class="strip-cell"><div class="strip-k">Tuck front lever</div><div class="strip-v">'+
-      (bf||"–")+'<span class="u">s</span></div><div class="strip-sub">best · 15s step</div></div>';
+      (bf||"–")+'<span class="u">s</span></div><div class="strip-sub">best &middot; 15s step</div></div>';
 }
 function renderTabs(){
-  var t=[["today","Today"],["trends","Trends"],["plan","Plan"]], h="";
+  var t=[["today","Today"],["trends","Trends"],["plan","Plan"]],h="";
   t.forEach(function(x){ h+='<button class="tab'+(tab===x[0]?" on":"")+'" data-act="tab" data-t="'+x[0]+'">'+x[1]+'</button>'; });
   document.getElementById("tabs").innerHTML=h;
 }
@@ -449,6 +590,7 @@ function render(){
   var sel=document.getElementById("sessSel");
   if(sel) sel.addEventListener("change",function(){ sessType=this.value; log={}; render(); });
   if(timerId) tick();
+  renderModal();
 }
 
 /* ================= timer ================= */
@@ -478,15 +620,38 @@ document.addEventListener("input",function(e){
 });
 document.addEventListener("click",function(e){
   var b=e.target.closest("[data-act]"); if(!b) return;
-  var a=b.dataset.act;
+  var a=b.dataset.act, id=b.dataset.ex, list;
+
   if(a==="tab"){ tab=b.dataset.t; render(); window.scrollTo(0,0); }
   else if(a==="t"){ startTimer(+b.dataset.s); }
   else if(a==="addset"){
-    var id=b.dataset.ex; log[id]=log[id]||[];
-    log[id].push(EX[id].k==="load"?{v:"",kg:""}:{v:""}); render();
+    log[id]=log[id]||[]; log[id].push(EX[id].k==="load"?{v:"",kg:""}:{v:""}); render();
   }
-  else if(a==="delset"){
-    var id2=b.dataset.ex; log[id2].splice(+b.dataset.i,1); render();
+  else if(a==="delset"){ log[id].splice(+b.dataset.i,1); render(); }
+  else if(a==="openpick"){ picker=true; renderModal(); }
+  else if(a==="closepick"){ picker=false; renderModal(); render(); }
+  else if(a==="closepickbg"){
+    if(e.target.classList.contains("modal")){ picker=false; renderModal(); render(); }
+  }
+  else if(a==="pickex"){
+    list=exList(sessType);
+    var at=list.indexOf(id);
+    if(at>=0){ list.splice(at,1); delete log[id]; }
+    else list.push(id);
+    setList(sessType,list);
+    document.getElementById("pbody").innerHTML=pickerList(document.getElementById("pq").value);
+  }
+  else if(a==="rmex"){
+    list=exList(sessType); list.splice(list.indexOf(id),1);
+    setList(sessType,list); delete log[id]; render();
+  }
+  else if(a==="up"||a==="down"){
+    list=exList(sessType);
+    var i=list.indexOf(id), j=(a==="up")?i-1:i+1;
+    if(j>=0&&j<list.length){ var tmp=list[i]; list[i]=list[j]; list[j]=tmp; setList(sessType,list); render(); }
+  }
+  else if(a==="resetsess"){
+    delete S.templates[sessType]; saveState(); log={}; render(); toast("Reset to default");
   }
   else if(a==="savew"){
     var v=parseFloat(document.getElementById("wIn").value);
@@ -511,18 +676,17 @@ document.addEventListener("click",function(e){
     try{ document.execCommand("copy"); toast("Backup copied"); }catch(err){ toast("Select and copy manually"); }
   }
   else if(a==="restore"){
-    var io2=document.getElementById("io");
-    io2.readOnly=false;
+    var io2=document.getElementById("io"); io2.readOnly=false;
     try{
       var p=JSON.parse(io2.value);
       if(!p.weights&&!p.sessions){ toast("That is not a backup"); return; }
-      S.weights=p.weights||[]; S.sessions=p.sessions||[];
+      S.weights=p.weights||[]; S.sessions=p.sessions||[]; S.templates=p.templates||{};
       saveState(); render(); toast("Restored");
     }catch(err){ toast("Paste a backup into the box first"); }
   }
 });
 
-/* ================= manifest for install ================= */
+/* ================= manifest ================= */
 (function(){
   var icon="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23111821'/%3E%3Crect x='68' y='239' width='376' height='34' rx='6' fill='%23E8A33D'/%3E%3Crect x='68' y='171' width='46' height='170' rx='8' fill='%23E8A33D'/%3E%3Crect x='398' y='171' width='46' height='170' rx='8' fill='%23E8A33D'/%3E%3C/svg%3E";
   var mf={name:"Straight Arm",short_name:"Straight Arm",start_url:".",display:"standalone",
