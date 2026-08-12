@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Straight Arm</title>
+<meta name="theme-color" content="#111821">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Straight Arm">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23111821'/%3E%3Crect x='24' y='84' width='132' height='12' rx='2' fill='%23E8A33D'/%3E%3Crect x='24' y='60' width='16' height='60' rx='3' fill='%23E8A33D'/%3E%3Crect x='140' y='60' width='16' height='60' rx='3' fill='%23E8A33D'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#111821; --panel:#18212C; --panel-2:#1E2833;
+  --line:#2B3846; --line-soft:#222D39;
+  --bone:#E9E5DB; --bone-dim:#9BA6B2; --bone-faint:#5E6C7A;
+  --amber:#E8A33D; --cyan:#4FB3BF; --alert:#D4574E;
+  --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--ink); color:var(--bone); font-family:var(--sans);
+  min-height:100vh; padding-bottom:calc(78px + env(safe-area-inset-bottom));
+  font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+}
+.strip{display:flex;border-bottom:1px solid var(--line);background:var(--panel);
+  position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);}
+.strip-cell{flex:1;padding:10px 12px;border-right:1px solid var(--line-soft);}
+.strip-cell:last-child{border-right:none;}
+.strip-k{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-faint);}
+.strip-v{font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:-.02em;margin-top:2px;}
+.strip-v .u{font-size:12px;color:var(--bone-faint);}
+.strip-sub{font-family:var(--mono);font-size:10px;color:var(--bone-dim);}
+.wrap{max-width:620px;margin:0 auto;padding:16px 14px 24px;}
+h2.sec{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--bone-faint);margin:26px 0 10px;font-weight:600;}
+h2.sec:first-child{margin-top:6px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;}
+.card-head{padding:12px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.card-title{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.card-target{font-family:var(--mono);font-size:11px;color:var(--bone-faint);white-space:nowrap;}
+.session-banner{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--amber);
+  border-radius:3px;padding:14px;margin-bottom:12px;}
+.session-day{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);}
+.session-name{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:3px;}
+.session-note{font-size:13px;color:var(--bone-dim);margin-top:6px;}
+.sets{padding:0 14px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.set{background:var(--ink);border:1px solid var(--line);border-radius:2px;padding:5px 8px;
+  font-family:var(--mono);font-size:14px;display:flex;align-items:center;gap:5px;}
+.set-x{color:var(--bone-faint);cursor:pointer;font-size:16px;padding:0 3px;line-height:1;}
+.set input{background:transparent;border:none;color:var(--bone);font-family:var(--mono);
+  font-size:16px;width:36px;text-align:right;padding:0;outline:none;}
+.set input:focus{color:var(--amber);}
+.set .u{color:var(--bone-faint);font-size:11px;}
+.addset{background:transparent;border:1px dashed var(--line);color:var(--bone-faint);
+  border-radius:2px;padding:7px 13px;font-family:var(--mono);font-size:13px;cursor:pointer;}
+.holdbar{padding:0 14px 14px;}
+.hb-track{position:relative;height:26px;background:var(--ink);border:1px solid var(--line-soft);
+  border-radius:2px;overflow:hidden;}
+.hb-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#7A5A22,var(--amber));}
+.hb-tick{position:absolute;top:0;bottom:0;width:1px;background:var(--line);}
+.hb-tick.goal{background:var(--cyan);width:2px;}
+.hb-lab{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding-left:8px;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--bone);text-shadow:0 1px 2px rgba(0,0,0,.6);}
+.hb-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;
+  color:var(--bone-faint);margin-top:3px;}
+.hb-msg{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-top:5px;line-height:1.4;}
+.btn{background:var(--amber);color:#14100A;border:none;border-radius:2px;padding:14px 18px;
+  font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);width:100%;letter-spacing:-.01em;}
+.btn:active{transform:translateY(1px);}
+.btn.ghost{background:transparent;color:var(--bone-dim);border:1px solid var(--line);}
+.btn.sm{padding:10px 15px;font-size:14px;width:auto;flex-shrink:0;}
+.wrow{display:flex;gap:8px;align-items:stretch;}
+.wrow input{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--bone);
+  font-family:var(--mono);font-size:22px;padding:12px 14px;border-radius:3px;outline:none;min-width:0;}
+.wrow input:focus{border-color:var(--amber);}
+.timer{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);
+  border-radius:3px;padding:12px 14px;margin-bottom:10px;}
+.timer-val{font-family:var(--mono);font-size:28px;font-weight:600;letter-spacing:-.03em;min-width:78px;}
+.timer-val.run{color:var(--amber);}
+.tbtns{display:flex;gap:6px;flex-wrap:wrap;}
+.tbtn{background:var(--ink);border:1px solid var(--line);color:var(--bone-dim);font-family:var(--mono);
+  font-size:12px;padding:8px 12px;border-radius:2px;cursor:pointer;}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px;margin-bottom:10px;}
+.chart svg{display:block;width:100%;overflow:visible;}
+.legend{display:flex;gap:16px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--bone-dim);flex-wrap:wrap;}
+.dot{display:inline-block;width:8px;height:2px;vertical-align:middle;margin-right:5px;}
+.stats{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-bottom:10px;}
+.stat{flex:1;padding:12px 10px;border-right:1px solid var(--line-soft);}
+.stat:last-child{border-right:none;}
+.flag{border-radius:3px;padding:13px 14px;margin-bottom:10px;border:1px solid;font-size:13px;line-height:1.5;}
+.flag-k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  display:block;margin-bottom:5px;font-weight:600;}
+.flag.ok{border-color:#33452C;background:#1A2318;color:#B9CFA9;}
+.flag.warn{border-color:#5A4520;background:#231C10;color:#E0C68E;}
+.flag.bad{border-color:#5A2E2A;background:#251715;color:#E8A9A2;}
+.plan-day{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft);}
+.plan-day:last-child{border-bottom:none;}
+.plan-d{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--amber);
+  width:48px;flex-shrink:0;padding-top:3px;text-transform:uppercase;}
+.plan-t{font-weight:600;font-size:14px;}
+.plan-s{font-size:12.5px;color:var(--bone-dim);margin-top:2px;}
+.rule{display:flex;gap:10px;padding:9px 0;font-size:13px;color:var(--bone-dim);
+  border-bottom:1px solid var(--line-soft);line-height:1.5;}
+.rule:last-child{border-bottom:none;}
+.rule b{color:var(--bone);font-weight:600;}
+.rule-n{font-family:var(--mono);font-size:11px;color:var(--bone-faint);flex-shrink:0;padding-top:2px;}
+.hist{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--line-soft);font-size:13px;}
+.hist-d{font-family:var(--mono);font-size:11px;color:var(--bone-faint);}
+.hist-t{font-weight:600;}
+.hist-v{font-family:var(--mono);font-size:12px;color:var(--bone-dim);text-align:right;}
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:var(--panel);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);}
+.tab{flex:1;padding:14px 4px 15px;background:none;border:none;cursor:pointer;font-family:var(--mono);
+  font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--bone-faint);
+  border-top:2px solid transparent;margin-top:-1px;}
+.tab.on{color:var(--amber);border-top-color:var(--amber);}
+.muted{color:var(--bone-dim);font-size:13px;line-height:1.55;}
+.muted b{color:var(--bone);font-weight:600;}
+.empty{text-align:center;padding:36px 20px;color:var(--bone-faint);font-size:13px;line-height:1.6;}
+.toast{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:var(--amber);color:#14100A;padding:11px 20px;border-radius:2px;font-size:13px;
+  font-weight:600;z-index:50;}
+select{background:var(--panel);border:1px solid var(--line);color:var(--bone);font-family:var(--mono);
+  font-size:14px;padding:11px 10px;border-radius:2px;width:100%;outline:none;
+  -webkit-appearance:none;appearance:none;}
+textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--bone-dim);
+  font-family:var(--mono);font-size:11px;padding:10px;border-radius:2px;height:90px;outline:none;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="strip" id="strip"></div>
+<div id="app"></div>
+<div class="tabs" id="tabs"></div>
+
+<script>
+/* ================= program ================= */
+var EX = {
+  handstand:    {n:"Handstand practice",      k:"mins", t:"5–8 min, fresh"},
+  handstandLong:{n:"Handstand practice",      k:"mins", t:"8–10 min"},
+  lean:         {n:"Planche lean",            k:"hold", t:"5 × 12–20s", goal:30, prog:"tuck planche"},
+  tuckP:        {n:"Tuck planche",            k:"hold", t:"5 × 5–8s",   goal:15, prog:"advanced tuck"},
+  pppu:         {n:"Pseudo planche push-up",  k:"reps", t:"4 × 5–8"},
+  hspu:         {n:"Wall HSPU",               k:"reps", t:"4 × 5"},
+  dips:         {n:"Dips",                    k:"reps", t:"3 × 8"},
+  tuckFL:       {n:"Tuck front lever",        k:"hold", t:"5 × 10–15s", goal:15, prog:"advanced tuck"},
+  flNeg:        {n:"Front lever negative",    k:"reps", t:"4 × 3, slow"},
+  wpull:        {n:"Weighted pull-up",        k:"load", t:"5 × 5 · from +10 kg"},
+  bandPull:     {n:"Straight-arm pulldown",   k:"reps", t:"3 × 10"},
+  rows:         {n:"Rows",                    k:"reps", t:"3 × 8"},
+  sternum:      {n:"Sternum-to-bar pull-up",  k:"reps", t:"4 × 3"},
+  muNeg:        {n:"Muscle-up negative",      k:"reps", t:"3 × 2, slow"},
+  kick:         {n:"Kickboxing",              k:"mins", t:"session length"},
+  squat:        {n:"Back squat",              k:"load", t:"4 × 4–5"},
+  rdl:          {n:"Romanian deadlift",       k:"load", t:"3 × 6–8"},
+  bss:          {n:"Bulgarian split squat",   k:"load", t:"3 × 8 / leg"},
+  nordic:       {n:"Nordic / leg curl",       k:"reps", t:"3 × 6"},
+  calf:         {n:"Standing calf raise",     k:"reps", t:"3 × 12"},
+  pullups:      {n:"Pull-ups",                k:"reps", t:"3 × 8 clean"},
+  rows10:       {n:"Rows",                    k:"reps", t:"3 × 10"}
+};
+var SESSIONS = {
+  planche:{name:"Planche + Push", note:"Skill holds first. Stop two seconds before form breaks.",
+    ex:["handstand","lean","tuckP","pppu","hspu","dips"]},
+  lever:{name:"Front Lever + Pull", note:"Straight-arm work fresh, then heavy pulling.",
+    ex:["tuckFL","flNeg","wpull","bandPull","rows","sternum","muNeg"]},
+  kickbox:{name:"Kickboxing", note:"Just log that it happened.", ex:["kick"]},
+  legs:{name:"Legs — heavy squat", note:"Top sets 4–5 reps. Cut split squats if legs feel hammered.",
+    ex:["squat","rdl","bss","nordic","calf"]},
+  full:{name:"Full body + handstand", note:"Quality day, not a hard day. Nothing to failure.",
+    ex:["handstandLong","tuckP","tuckFL","sternum","muNeg","pullups","dips","rows10"]},
+  rest:{name:"Rest day", note:"Wrist and shoulder prep only. Two full rest days is the floor.", ex:[]}
+};
+var WEEK = ["rest","planche","lever","kickbox","legs","full","full"];
+var DAYNAME = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var TARGET_KG=84, START_KG=74, KCAL=2900, STORE="straightarm.v1";
+
+/* ================= state ================= */
+var S = {weights:[], sessions:[]};
+var tab="today", log={}, sessType=null, timerLeft=0, timerId=null;
+
+function loadState(){
+  try{ var r=localStorage.getItem(STORE); if(r){ var p=JSON.parse(r);
+    S.weights=p.weights||[]; S.sessions=p.sessions||[]; } }catch(e){}
+}
+function saveState(){
+  try{ localStorage.setItem(STORE,JSON.stringify(S)); return true; }catch(e){ return false; }
+}
+
+/* ================= helpers ================= */
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function today(){ return iso(new Date()); }
+function fmtDate(s){ var p=s.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]);
+  return DAYNAME[d.getDay()]+" "+d.getDate()+"/"+(d.getMonth()+1); }
+function daysAgo(s){ var p=s.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]); var n=new Date();
+  n.setHours(0,0,0,0); return Math.round((n-d)/864e5); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function regression(pts){
+  if(pts.length<4) return null;
+  var n=pts.length, mx=0,my=0,i;
+  for(i=0;i<n;i++){mx+=pts[i].x;my+=pts[i].y;} mx/=n; my/=n;
+  var num=0,den=0;
+  for(i=0;i<n;i++){num+=(pts[i].x-mx)*(pts[i].y-my);den+=Math.pow(pts[i].x-mx,2);}
+  if(den===0) return null;
+  return (num/den)*7;
+}
+function bestHold(key){
+  var b=0;
+  S.sessions.forEach(function(s){ var arr=(s.ex||{})[key]; if(!arr) return;
+    arr.forEach(function(x){ var v=parseFloat(x.v)||0; if(v>b) b=v; }); });
+  return b;
+}
+function rateNow(){
+  return regression(S.weights.filter(function(x){return daysAgo(x.d)<=21;})
+    .map(function(x){return {x:-daysAgo(x.d),y:x.kg};}));
+}
+function toast(m){
+  var t=document.createElement("div"); t.className="toast"; t.textContent=m;
+  document.body.appendChild(t); setTimeout(function(){t.remove();},1600);
+}
+
+/* ================= views ================= */
+function holdBar(id){
+  var e=EX[id], best=bestHold(id), pct=Math.min(100,best/e.goal*100), ticks="";
+  for(var i=5;i<e.goal;i+=5) ticks+='<div class="hb-tick" style="left:'+(i/e.goal*100)+'%"></div>';
+  return '<div class="holdbar"><div class="hb-track">'+
+    '<div class="hb-fill" style="width:'+pct+'%"></div>'+ticks+
+    '<div class="hb-tick goal" style="left:calc(100% - 2px)"></div>'+
+    '<div class="hb-lab">'+(best>0?best+"s best":"no hold logged")+'</div></div>'+
+    '<div class="hb-scale"><span>0s</span><span>'+e.goal+'s → '+e.prog+'</span></div>'+
+    (best>=e.goal?'<div class="hb-msg">Threshold hit. Hold 3 × '+e.goal+'s clean on two separate sessions, then step up.</div>':'')+
+    '</div>';
+}
+function exRow(id){
+  var e=EX[id], sets=log[id]||[], unit=e.k==="hold"?"s":e.k==="mins"?"min":e.k==="load"?"":"reps", h="";
+  sets.forEach(function(s,i){
+    h+='<div class="set"><input inputmode="decimal" data-ex="'+id+'" data-i="'+i+'" data-f="v" value="'+esc(s.v)+'" placeholder="–">'+
+      '<span class="u">'+unit+'</span>';
+    if(e.k==="load") h+='<span class="u">×</span><input inputmode="decimal" style="width:40px" data-ex="'+id+'" data-i="'+i+'" data-f="kg" value="'+esc(s.kg||"")+'" placeholder="kg"><span class="u">kg</span>';
+    h+='<span class="set-x" data-act="delset" data-ex="'+id+'" data-i="'+i+'">×</span></div>';
+  });
+  h+='<button class="addset" data-act="addset" data-ex="'+id+'">+ set</button>';
+  return '<div class="card"><div class="card-head"><div class="card-title">'+e.n+'</div>'+
+    '<div class="card-target">'+e.t+'</div></div><div class="sets">'+h+'</div>'+
+    (e.k==="hold"?holdBar(id):'')+'</div>';
+}
+function viewToday(){
+  var dow=new Date().getDay();
+  if(sessType===null) sessType=WEEK[dow];
+  var sess=SESSIONS[sessType], wT=null;
+  S.weights.forEach(function(x){ if(x.d===today()) wT=x; });
+  var opts="";
+  for(var k in SESSIONS) opts+='<option value="'+k+'"'+(k===sessType?" selected":"")+'>'+SESSIONS[k].name+'</option>';
+
+  var h='<div class="wrap"><div class="session-banner">'+
+    '<div class="session-day">'+DAYNAME[dow]+' · '+fmtDate(today())+'</div>'+
+    '<div class="session-name">'+sess.name+'</div>'+
+    '<div class="session-note">'+sess.note+'</div></div>'+
+    '<select id="sessSel">'+opts+'</select>'+
+    '<h2 class="sec">Morning weight</h2><div class="wrow">'+
+    '<input id="wIn" inputmode="decimal" placeholder="'+(wT?wT.kg+" kg logged":"kg")+'">'+
+    '<button class="btn sm" data-act="savew">Save</button></div>'+
+    '<div class="muted" style="margin-top:6px;font-family:var(--mono);font-size:11px">'+
+    'Target '+KCAL+' kcal · 130–140 g protein · goal '+TARGET_KG+' kg</div>';
+
+  if(sess.ex.length){
+    h+='<h2 class="sec">Session</h2><div class="timer"><div class="timer-val" id="tv">0:00</div>'+
+      '<div class="tbtns"><button class="tbtn" data-act="t" data-s="90">90s</button>'+
+      '<button class="tbtn" data-act="t" data-s="120">2 min</button>'+
+      '<button class="tbtn" data-act="t" data-s="180">3 min</button>'+
+      '<button class="tbtn" data-act="t" data-s="0">stop</button></div></div>';
+    sess.ex.forEach(function(id){ h+=exRow(id); });
+    h+='<button class="btn" data-act="savesess" style="margin-top:6px">Save session</button>';
+  } else {
+    h+='<div class="empty">Rest day. Wrist and shoulder prep, easy handstand if you feel like it.<br>Nothing to log.</div>';
+  }
+  return h+'</div>';
+}
+function weightChart(){
+  var pts=S.weights.filter(function(x){return daysAgo(x.d)<=90;});
+  if(pts.length<2) return '<div class="chart"><div class="empty" style="padding:24px 0">Two weigh-ins needed before the line means anything.</div></div>';
+  var W=320,H=110,P=4;
+  var xs=pts.map(function(p){return -daysAgo(p.d);});
+  var minX=Math.min.apply(null,xs), maxX=Math.max.apply(null,xs.concat([0]));
+  var ys=pts.map(function(p){return p.kg;});
+  var minY=Math.min.apply(null,ys.concat([START_KG]))-0.6;
+  var maxY=Math.max.apply(null,ys.concat([TARGET_KG]))+0.6;
+  var X=function(x){return P+((x-minX)/((maxX-minX)||1))*(W-2*P);};
+  var Y=function(y){return P+(1-(y-minY)/((maxY-minY)||1))*(H-2*P);};
+  var d="",c="";
+  pts.forEach(function(p,i){ var x=X(-daysAgo(p.d)).toFixed(1), y=Y(p.kg).toFixed(1);
+    d+=(i?"L":"M")+x+" "+y+" "; c+='<circle cx="'+x+'" cy="'+y+'" r="2.5" fill="var(--amber)"/>'; });
+  return '<div class="chart"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:110px">'+
+    '<line x1="0" x2="'+W+'" y1="'+Y(TARGET_KG)+'" y2="'+Y(TARGET_KG)+'" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="3 3"/>'+
+    '<path d="'+d+'" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'+
+    c+'</svg><div class="legend"><span><i class="dot" style="background:var(--amber)"></i>bodyweight</span>'+
+    '<span><i class="dot" style="background:var(--cyan)"></i>'+TARGET_KG+' kg target</span></div></div>';
+}
+function weeklyHolds(){
+  var m={};
+  S.sessions.forEach(function(s){
+    var wk=Math.floor(daysAgo(s.d)/7); if(wk>11||wk<0) return;
+    ["tuckP","tuckFL"].forEach(function(k){
+      var arr=(s.ex||{})[k]; if(!arr) return;
+      var b=Math.max.apply(null,arr.map(function(x){return parseFloat(x.v)||0;}));
+      m[wk]=m[wk]||{}; if(b>(m[wk][k]||0)) m[wk][k]=b;
+    });
+  });
+  return m;
+}
+function holdChart(m){
+  var any=false; for(var q in m) any=true;
+  if(!any) return '<div class="chart"><div class="empty" style="padding:24px 0">Log tuck planche and tuck front lever holds. This chart is your early warning that bodyweight is outrunning your strength.</div></div>';
+  var W=320,H=100,P=4, vals=[20];
+  for(var w in m) for(var k in m[w]) vals.push(m[w][k]);
+  var max=Math.max.apply(null,vals);
+  var X=function(i){return P+(i/11)*(W-2*P);};
+  var Y=function(v){return P+(1-v/max)*(H-2*P);};
+  function line(key,col){
+    var d="",n=0;
+    for(var i=0;i<12;i++){ var wk=11-i; if(m[wk]&&m[wk][key]){
+      d+=(n?"L":"M")+X(i).toFixed(1)+" "+Y(m[wk][key]).toFixed(1)+" "; n++; } }
+    return n?'<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" vector-effect="non-scaling-stroke"/>':"";
+  }
+  return '<div class="chart"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:100px">'+
+    '<line x1="0" x2="'+W+'" y1="'+Y(15)+'" y2="'+Y(15)+'" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"/>'+
+    line("tuckP","var(--amber)")+line("tuckFL","var(--cyan)")+'</svg>'+
+    '<div class="legend"><span><i class="dot" style="background:var(--amber)"></i>tuck planche</span>'+
+    '<span><i class="dot" style="background:var(--cyan)"></i>tuck front lever</span>'+
+    '<span style="color:var(--bone-faint)">dashed = 15s step-up</span></div></div>';
+}
+function viewTrends(){
+  var rate=rateNow(), m=weeklyHolds();
+  var cur=S.weights.length?S.weights[S.weights.length-1].kg:null;
+  var l7=S.weights.filter(function(x){return daysAgo(x.d)<=7;});
+  var avg7=l7.length?l7.reduce(function(a,x){return a+x.kg;},0)/l7.length:null;
+
+  function trend(k){
+    var r=[0,1].map(function(w){return m[w]&&m[w][k];}).filter(Boolean);
+    var p=[2,3].map(function(w){return m[w]&&m[w][k];}).filter(Boolean);
+    if(!r.length||!p.length) return null;
+    return Math.max.apply(null,r)-Math.max.apply(null,p);
+  }
+  var tp=trend("tuckP"), tf=trend("tuckFL"), f;
+  if(rate===null) f={c:"warn",k:"Not enough data",t:"Log morning weight a few times a week. After about three weeks the rate becomes meaningful."};
+  else if(rate>0.5&&((tp!==null&&tp<0)||(tf!==null&&tf<0)))
+    f={c:"bad",k:"Pull calories back",t:"Weight is climbing fast and a key hold has gone backwards. Drop about 150–200 kcal and re-check in two weeks."};
+  else if(rate>0.5) f={c:"warn",k:"Gaining fast",t:"About "+rate.toFixed(2)+" kg/week. Above ~0.35 the extra is mostly fat. Consider trimming 150 kcal."};
+  else if(rate<0.05) f={c:"warn",k:"Stalled",t:"About "+rate.toFixed(2)+" kg/week. If that holds for two more weeks, add 150 kcal."};
+  else f={c:"ok",k:"On track",t:"About "+rate.toFixed(2)+" kg/week — the range where most of the gain is muscle. Holds "+((tp<0||tf<0)?"worth watching":"look fine")+"."};
+
+  var toGo=cur!==null?TARGET_KG-cur:null;
+  var eta=(rate&&rate>0.05&&toGo>0)?Math.ceil(toGo/rate):null;
+  function st(k,v,u){ return '<div class="stat"><div class="strip-k">'+k+'</div><div class="strip-v">'+v+'</div><div class="strip-sub">'+u+'</div></div>'; }
+
+  var h='<div class="wrap"><div class="flag '+f.c+'"><span class="flag-k">'+f.k+'</span>'+f.t+'</div>'+
+    '<h2 class="sec">Bodyweight · '+START_KG+' → '+TARGET_KG+' kg</h2>'+weightChart()+
+    '<div class="stats">'+
+      st("Latest",cur!==null?cur.toFixed(1):"–","kg")+
+      st("7-day avg",avg7!==null?avg7.toFixed(1):"–","kg")+
+      st("Rate",rate!==null?(rate>0?"+":"")+rate.toFixed(2):"–","kg/wk")+
+      st("To go",toGo!==null?toGo.toFixed(1):"–",eta?"kg · ~"+eta+" wk":"kg")+
+    '</div><h2 class="sec">Weekly best holds</h2>'+holdChart(m)+
+    '<h2 class="sec">Recent sessions</h2>';
+
+  if(!S.sessions.length) h+='<div class="empty">No sessions yet.</div>';
+  S.sessions.slice().reverse().slice(0,20).forEach(function(s){
+    var parts=[];
+    Object.keys(s.ex||{}).slice(0,3).forEach(function(k){
+      if(!EX[k]) return;
+      var b=Math.max.apply(null,s.ex[k].map(function(x){return parseFloat(x.v)||0;}));
+      parts.push(EX[k].n.split(" ")[0]+" "+b+(EX[k].k==="hold"?"s":""));
+    });
+    h+='<div class="hist"><div><div class="hist-t">'+(SESSIONS[s.type]?SESSIONS[s.type].name:s.type)+'</div>'+
+      '<div class="hist-d">'+fmtDate(s.d)+'</div></div><div class="hist-v">'+parts.join(" · ")+'</div></div>';
+  });
+  return h+'</div>';
+}
+function viewPlan(){
+  var days=[
+    ["Mon","Planche + push","Handstand → planche lean → tuck planche → PPPU → wall HSPU → dips"],
+    ["Tue","Front lever + pull","Tuck FL → FL negatives → weighted pull-ups → band pulldown → rows → muscle-up work"],
+    ["Wed","Kickboxing","Fixed. Never squat within 24h before this."],
+    ["Thu","Legs","Back squat 4×4–5 → RDL → split squat → nordic → calf. No heavy conventional deadlifts."],
+    ["Fri–Sun","One full body day","Saturday if you get the choice, then Friday, then Sunday. Zero is a fine answer."]
+  ];
+  var rules=[
+    ["01","Skill holds go first in every session, always. Never bolt them onto the end because the day got compressed."],
+    ["02","Stop each hold two seconds before form breaks. Never to failure — tendons adapt far slower than muscle."],
+    ["03","Straight sets with 2–3 min rest for holds and heavy lifts. Circuits only for the accessories at the end."],
+    ["04","Step up a progression only after 3 × 15s clean on two separate sessions."],
+    ["05","Deload every 6–8 weeks: halve the skill sets for one week."],
+    ["06","If elbows or inner biceps start talking, halve planche lean and front lever volume for two weeks."],
+    ["07","Cap the weekend at one session. Two full rest days is the floor."],
+    ["08","Don't stack a missed session onto another day."]
+  ];
+  var h='<div class="wrap"><h2 class="sec">Fixed week</h2><div class="card" style="padding:4px 14px 8px">';
+  days.forEach(function(d){ h+='<div class="plan-day"><div class="plan-d">'+d[0]+'</div><div>'+
+    '<div class="plan-t">'+d[1]+'</div><div class="plan-s">'+d[2]+'</div></div></div>'; });
+  h+='</div><h2 class="sec">Rules that decide whether this works</h2><div class="card" style="padding:4px 14px 8px">';
+  rules.forEach(function(r){ h+='<div class="rule"><span class="rule-n">'+r[0]+'</span><span>'+r[1]+'</span></div>'; });
+  h+='</div><h2 class="sec">Eating</h2><div class="card" style="padding:14px"><div class="muted">'+
+    '<b>'+KCAL+' kcal, 130–140 g protein.</b> Weigh in a few mornings a week and use the weekly average — '+
+    'the daily number is noise. Settle around 0.3 kg/week and '+TARGET_KG+' kg arrives in four to five months.'+
+    '<br><br>Carbs higher on Wednesday and Thursday for kickboxing and the squat. After years of making weight '+
+    'for karting, the useful skill now is eating well without tracking every gram — the trend line does the work.'+
+    '</div></div><h2 class="sec">Progression map</h2><div class="card" style="padding:14px"><div class="muted">'+
+    '<b>Front lever:</b> tuck → advanced tuck (one knee out) → straddle → full. Straddle is realistically 6–12 months from tuck.'+
+    '<br><br><b>Planche:</b> lean 30s → tuck → advanced tuck → straddle. Straddle often takes 18+ months. That is normal, not slow.'+
+    '<br><br><b>Muscle-up:</b> the kip hides a transition weakness. Sternum-to-bar pull-ups and slow negatives fix it faster than more kipping reps.'+
+    '</div></div><h2 class="sec">Backup</h2><div class="card" style="padding:14px">'+
+    '<div class="muted" style="margin-bottom:10px">Everything is stored on this device only. Copy this out before clearing browser data or switching phones.</div>'+
+    '<textarea id="io" readonly>'+esc(JSON.stringify(S))+'</textarea>'+
+    '<div style="display:flex;gap:8px;margin-top:8px">'+
+    '<button class="btn ghost sm" data-act="copy">Copy backup</button>'+
+    '<button class="btn ghost sm" data-act="restore">Restore from box</button></div></div></div>';
+  return h;
+}
+
+/* ================= render ================= */
+function renderStrip(){
+  var cur=S.weights.length?S.weights[S.weights.length-1].kg:null, r=rateNow();
+  var bp=bestHold("tuckP"), bf=bestHold("tuckFL");
+  document.getElementById("strip").innerHTML=
+    '<div class="strip-cell"><div class="strip-k">Weight</div><div class="strip-v">'+
+      (cur!==null?cur.toFixed(1):"–")+'</div><div class="strip-sub">'+
+      (r!==null?(r>0?"+":"")+r.toFixed(2)+" kg/wk":"kg")+'</div></div>'+
+    '<div class="strip-cell"><div class="strip-k">Tuck planche</div><div class="strip-v">'+
+      (bp||"–")+'<span class="u">s</span></div><div class="strip-sub">best · 15s step</div></div>'+
+    '<div class="strip-cell"><div class="strip-k">Tuck front lever</div><div class="strip-v">'+
+      (bf||"–")+'<span class="u">s</span></div><div class="strip-sub">best · 15s step</div></div>';
+}
+function renderTabs(){
+  var t=[["today","Today"],["trends","Trends"],["plan","Plan"]], h="";
+  t.forEach(function(x){ h+='<button class="tab'+(tab===x[0]?" on":"")+'" data-act="tab" data-t="'+x[0]+'">'+x[1]+'</button>'; });
+  document.getElementById("tabs").innerHTML=h;
+}
+function render(){
+  renderStrip(); renderTabs();
+  document.getElementById("app").innerHTML =
+    tab==="today"?viewToday(): tab==="trends"?viewTrends(): viewPlan();
+  var sel=document.getElementById("sessSel");
+  if(sel) sel.addEventListener("change",function(){ sessType=this.value; log={}; render(); });
+  if(timerId) tick();
+}
+
+/* ================= timer ================= */
+function tick(){
+  var el=document.getElementById("tv"); if(!el) return;
+  var m=Math.floor(timerLeft/60), s=timerLeft%60;
+  el.textContent=m+":"+String(s).padStart(2,"0");
+  el.className="timer-val"+(timerLeft>0?" run":"");
+}
+function startTimer(sec){
+  clearInterval(timerId); timerId=null; timerLeft=sec; tick();
+  if(sec<=0) return;
+  timerId=setInterval(function(){
+    timerLeft--; tick();
+    if(timerLeft<=0){ clearInterval(timerId); timerId=null;
+      if(navigator.vibrate) navigator.vibrate([120,80,120]); }
+  },1000);
+}
+
+/* ================= events ================= */
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset && t.dataset.ex && t.dataset.f){
+    t.value=t.value.replace(/[^\d.]/g,"");
+    var a=log[t.dataset.ex]; if(a&&a[t.dataset.i]) a[t.dataset.i][t.dataset.f]=t.value;
+  }
+});
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]"); if(!b) return;
+  var a=b.dataset.act;
+  if(a==="tab"){ tab=b.dataset.t; render(); window.scrollTo(0,0); }
+  else if(a==="t"){ startTimer(+b.dataset.s); }
+  else if(a==="addset"){
+    var id=b.dataset.ex; log[id]=log[id]||[];
+    log[id].push(EX[id].k==="load"?{v:"",kg:""}:{v:""}); render();
+  }
+  else if(a==="delset"){
+    var id2=b.dataset.ex; log[id2].splice(+b.dataset.i,1); render();
+  }
+  else if(a==="savew"){
+    var v=parseFloat(document.getElementById("wIn").value);
+    if(!v||v<40||v>200){ toast("Enter a weight in kg"); return; }
+    S.weights=S.weights.filter(function(x){return x.d!==today();});
+    S.weights.push({d:today(),kg:v});
+    S.weights.sort(function(x,y){return x.d<y.d?-1:1;});
+    saveState(); render(); toast("Weight saved");
+  }
+  else if(a==="savesess"){
+    var ex={},n=0;
+    for(var k in log){
+      var clean=log[k].filter(function(s){return s.v!=="";});
+      if(clean.length){ ex[k]=clean; n++; }
+    }
+    if(!n){ toast("Nothing logged yet"); return; }
+    S.sessions.push({id:Date.now(),d:today(),type:sessType,ex:ex});
+    saveState(); log={}; render(); toast("Session saved");
+  }
+  else if(a==="copy"){
+    var io=document.getElementById("io"); io.select(); io.setSelectionRange(0,999999);
+    try{ document.execCommand("copy"); toast("Backup copied"); }catch(err){ toast("Select and copy manually"); }
+  }
+  else if(a==="restore"){
+    var io2=document.getElementById("io");
+    io2.readOnly=false;
+    try{
+      var p=JSON.parse(io2.value);
+      if(!p.weights&&!p.sessions){ toast("That is not a backup"); return; }
+      S.weights=p.weights||[]; S.sessions=p.sessions||[];
+      saveState(); render(); toast("Restored");
+    }catch(err){ toast("Paste a backup into the box first"); }
+  }
+});
+
+/* ================= manifest for install ================= */
+(function(){
+  var icon="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23111821'/%3E%3Crect x='68' y='239' width='376' height='34' rx='6' fill='%23E8A33D'/%3E%3Crect x='68' y='171' width='46' height='170' rx='8' fill='%23E8A33D'/%3E%3Crect x='398' y='171' width='46' height='170' rx='8' fill='%23E8A33D'/%3E%3C/svg%3E";
+  var mf={name:"Straight Arm",short_name:"Straight Arm",start_url:".",display:"standalone",
+    background_color:"#111821",theme_color:"#111821",
+    icons:[{src:icon,sizes:"512x512",type:"image/svg+xml",purpose:"any"}]};
+  try{
+    var l=document.createElement("link"); l.rel="manifest";
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:"application/manifest+json"}));
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+
+loadState();
+render();
+</script>
+</body>
+</html>
