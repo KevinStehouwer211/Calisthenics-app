@@ -96,13 +96,15 @@ button{font-family:inherit;}
   overflow:hidden;border:1px solid var(--edge);animation:rise .3s var(--ease) both;}
 @keyframes rise{from{opacity:0;transform:translateY(9px);}}
 .pad{padding:16px 18px;}
-.ex-top{padding:16px 18px 12px;display:flex;align-items:flex-start;gap:11px;}
+.ex-top{padding:15px 16px 0;display:flex;align-items:center;gap:11px;}
+.ex-title{flex:1;min-width:0;}
+.ex-tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 16px 0 71px;}
 .gly{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:3.3;
   stroke-linecap:round;stroke-linejoin:round;display:block;overflow:visible;}
 .gly .env{stroke-width:2.2;opacity:.3;}
 .gly .hd{fill:currentColor;stroke:none;}
 .ex-gly{width:44px;height:44px;flex-shrink:0;border-radius:13px;background:var(--blue-wash);
-  color:var(--blue);padding:5px;margin-top:1px;}
+  color:var(--blue);padding:5px;}
 .pick-g{width:38px;height:38px;flex-shrink:0;border-radius:11px;background:var(--paper);
   color:var(--ink-2);padding:4px;}
 .pick.in .pick-g{background:rgba(255,255,255,.2);color:#fff;}
@@ -123,18 +125,18 @@ button{font-family:inherit;}
 .inf-warn{background:#FFF1EC;border-radius:var(--r-lg);padding:15px 17px;font-size:13.5px;
   line-height:1.5;color:#9A3B1C;}
 
-.ex-name{font-family:var(--disp);font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.2;}
-.chip{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:500;color:var(--muted);
-  background:var(--paper);padding:3px 9px;border-radius:99px;}
-.ex-tools{display:flex;gap:4px;margin-left:auto;flex-shrink:0;}
-.icb{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+.ex-name{font-family:var(--disp);font-size:16px;font-weight:600;letter-spacing:-.022em;line-height:1.22;}
+.chip{display:inline-flex;align-items:center;height:22px;font-size:11.5px;font-weight:500;
+  color:var(--muted);background:var(--paper);padding:0 9px;border-radius:99px;white-space:nowrap;}
+.ex-tools{display:flex;gap:3px;flex-shrink:0;}
+.icb{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;
   transition:transform .16s var(--ease),background .16s;}
 .icb:active{transform:scale(.87);background:var(--paper);}
 .icb svg{width:13px;height:13px;stroke:var(--muted);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 .icb.dngr svg{stroke:var(--red);}
 
-.sets{padding:0 18px 16px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
+.sets{padding:12px 16px 14px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
 .set{background:var(--paper);border-radius:11px;padding:7px 10px;display:flex;align-items:center;gap:5px;
   animation:pop .2s var(--ease) both;}
 @keyframes pop{from{opacity:0;transform:scale(.86);}}
@@ -160,8 +162,8 @@ button{font-family:inherit;}
 .bdg{display:block;flex-shrink:0;filter:drop-shadow(0 1px 1.5px rgba(11,14,18,.22));}
 .rk-th em{font-style:normal;color:var(--muted);font-size:11.5px;background:var(--paper);
   padding:2px 7px;border-radius:99px;margin-left:6px;}
-.rk{display:inline-flex;align-items:center;gap:5px;margin-left:6px;font-size:10.5px;font-weight:700;letter-spacing:.05em;
-  text-transform:uppercase;padding:3px 8px;border-radius:99px;vertical-align:middle;}
+.rk{display:inline-flex;align-items:center;gap:5px;height:22px;font-size:10.5px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;padding:0 9px 0 5px;border-radius:99px;}
 /* the ladder, in six rungs — the one element this app is remembered by */
 .lad{display:flex;gap:3px;margin-top:9px;}
 .lad-s{flex:1;height:7px;border-radius:4px;background:#DDE2E8;overflow:hidden;}
@@ -214,7 +216,7 @@ button{font-family:inherit;}
 .rl-i{flex:1;min-width:0;}
 .rl-n{font-size:13.5px;font-weight:600;letter-spacing:-.01em;}
 .rl-r{flex-shrink:0;display:flex;align-items:center;}
-.meter{padding:0 18px 18px;}
+.meter{padding:0 16px 16px;}
 .meter-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;gap:10px;}
 .meter-v{font-family:var(--disp);font-size:15px;font-weight:600;letter-spacing:-.02em;}
 .meter-g{font-size:11.5px;color:var(--faint);font-weight:500;text-align:right;}
@@ -377,12 +379,12 @@ button{font-family:inherit;}
 .chip-l:first-child{margin-top:0;}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .chips::-webkit-scrollbar{display:none;}
-.chip{flex-shrink:0;background:var(--card);border:1px solid var(--edge);border-radius:99px;
+.fchip{flex-shrink:0;background:var(--card);border:1px solid var(--edge);border-radius:99px;
   padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;
   transition:transform .14s var(--ease),background .16s,color .16s,border-color .16s;}
-.chip:active{transform:scale(.94);}
-.chip.on{background:var(--blue);border-color:var(--blue);color:#fff;}
-.chip.clear{background:var(--ink);border-color:var(--ink);color:#fff;margin-bottom:4px;}
+.fchip:active{transform:scale(.94);}
+.fchip.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.fchip.clear{background:var(--ink);border-color:var(--ink);color:#fff;margin-bottom:4px;}
 .cnt{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
   margin:18px 0 2px;}
 .pick-i{flex:1;min-width:0;}
@@ -1754,7 +1756,7 @@ function schedChanged(){for(var q in S.schedule)return true;return false;}
 function tierTrack(i,pct,cls){
   var h='<div class="lad'+(cls?" "+cls:"")+'">';
   for(var j=0;j<6;j++){
-    var w=j<=i?100:(j===i+1?Math.max(2,pct):0);
+    var w=j<=i?100:(j===i+1&&pct>0?Math.max(4,pct):0);
     h+='<div class="lad-s"><i style="width:'+w.toFixed(0)+'%;background:'+RCOL[j]+'"></i></div>';
   }
   return h+'</div>';
@@ -2000,12 +2002,14 @@ function exCard(id,i,n,type){
   });
   if(e.k==="hold")h+='<button class="time-btn" data-act="dial" data-ex="'+id+'">'+I.clock+'Time a hold</button>';
   h+='<button class="ghost-btn" data-act="addset" data-ex="'+id+'">Add set</button>';
-  return '<div class="card"><div class="ex-top"><div class="ex-gly">'+glyph(id)+'</div><div><div class="ex-name">'+e.n+'</div>'+
-    '<span class="chip">'+exTarget(id)+(S.targets[id]?" · edited":"")+'</span>'+rankPill(id)+'</div><div class="ex-tools">'+
+  return '<div class="card"><div class="ex-top"><div class="ex-gly">'+glyph(id)+'</div>'+
+    '<div class="ex-title"><div class="ex-name">'+e.n+'</div></div>'+
+    '<div class="ex-tools">'+
     (i>0?'<button class="icb" data-act="up" data-ex="'+id+'" data-t="'+type+'">'+I.up+'</button>':'')+
     (i<n-1?'<button class="icb" data-act="down" data-ex="'+id+'" data-t="'+type+'">'+I.down+'</button>':'')+
     '<button class="icb" data-act="info" data-ex="'+id+'">'+I.info+'</button>'+
     '<button class="icb dngr" data-act="rmex" data-ex="'+id+'" data-t="'+type+'">'+I.x+'</button></div></div>'+
+    '<div class="ex-tags"><span class="chip">'+exTarget(id)+(S.targets[id]?" · edited":"")+'</span>'+rankPill(id)+'</div>'+
     '<div class="sets">'+h+'</div>'+((FAMOF[id]||STD[id]||e.k==="hold")?meter(id):'')+'</div>';
 }
 
@@ -2548,14 +2552,14 @@ function chipRow(lab,items,grp){
   var h='<div class="chip-l">'+lab+'</div><div class="chips">';
   items.forEach(function(it){
     var v=it instanceof Array?it[0]:it, t=it instanceof Array?it[1]:it;
-    h+='<button class="chip'+(pf[grp].indexOf(v)>=0?" on":"")+'" data-act="filt" data-g="'+grp+'" data-v="'+v+'">'+t+'</button>';
+    h+='<button class="fchip'+(pf[grp].indexOf(v)>=0?" on":"")+'" data-act="filt" data-g="'+grp+'" data-v="'+v+'">'+t+'</button>';
   });
   return h+'</div>';
 }
 function pickList(q){
   var L=list(pickFor),h="",ql=(q||"").toLowerCase(),n=0;
   h+='<div class="filt">'+
-     (pfActive()?'<button class="chip clear" data-act="filtclear">Clear '+pfActive()+' filter'+(pfActive()===1?'':'s')+'</button>':'')+
+     (pfActive()?'<button class="fchip clear" data-act="filtclear">Clear '+pfActive()+' filter'+(pfActive()===1?'':'s')+'</button>':'')+
      chipRow("Muscle group",F_MUS,"m")+
      chipRow("Focus",F_Q,"q")+
      chipRow("Type",F_K,"k")+
