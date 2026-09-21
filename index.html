@@ -1619,9 +1619,9 @@ function setsAtLeast(id,thr,byKg){
   return m;
 }
 /* the single source of truth the card, the ladder and the suggestion all read */
-function clearInfo(id){var key=FAMOF[id];if(!key)return null;var f=FAM[key],mine=null,last=null;f.steps.forEach(function(st,j){if(st.id!==id)return;var ev=stepEvidence(st);last={st:st,j:j,ev:ev};if(!mine&&!ev.confirmed)mine=last;});if(!last)return null;var tgt=mine||last;return {j:tgt.j,st:tgt.st,thr:tgt.st.s,best:stepBest(tgt.st),u:tgt.st.u||"s",reached:tgt.ev.reached,confirmed:tgt.ev.confirmed,days:tgt.ev.days};}
+function clearInfo(id){var key=FAMOF[id];if(!key)return null;var first=null,reached=null;FAM[key].steps.forEach(function(st,j){if(st.id!==id)return;var item={st:st,j:j,ev:stepEvidence(st)};if(!first)first=item;if(item.ev.reached)reached=item;});var tgt=reached||first;if(!tgt)return null;return {j:tgt.j,st:tgt.st,thr:tgt.st.s,best:stepBest(tgt.st),u:tgt.st.u||"s",reached:tgt.ev.reached,confirmed:tgt.ev.confirmed,days:tgt.ev.days};}
 /* Only demonstrated rungs count as cleared. */
-function famCleared(key){return FAM[key].steps.map(function(st){return stepEvidence(st).confirmed;});}
+function famCleared(key){return FAM[key].steps.map(function(st){return stepEvidence(st).reached;});}
 function famRank(key){
   var f=FAM[key],cl=famCleared(key),i=-1;
   cl.forEach(function(c,j){ if(c) i=j; });
@@ -1630,7 +1630,7 @@ function famRank(key){
   if(nxt){
     var have=stepBest(nxt),floor=(i>=0&&f.steps[i].id===nxt.id&&f.steps[i].u===nxt.u)?f.steps[i].s:0;
     pct=Math.max(0,Math.min(100,(have-floor)/((nxt.s-floor)||1)*100));
-    if(!stepEvidence(nxt).confirmed)pct=Math.min(95,pct);
+    
   }
   return {i:i,name:i<0?"Unranked":RANKS[i],col:i<0?"#98A2AE":RCOL[i],fam:key,
     next:nxt,pct:pct,steps:f.steps};
@@ -1861,7 +1861,7 @@ function prescribedSets(id){var m=exTarget(id).match(/^(\d+)\s*×/);return m?+m[
 function completedTarget(day,id,reps,load){return day.sets.filter(function(x){return num(x.v)>=reps&&(load===undefined||num(x.kg)>=load);}).length>=prescribedSets(id);}
 function suggest(id){var e=EX[id],h=history(id,42),r=planRange(id);if(!r||e.k==='mins'||e.unit)return null;
   var recent=h.slice(0,3),old=h.slice(2,5);if(h.length>=4){var now=Math.max.apply(null,h.slice(0,2).map(function(x){return x.v;})),before=Math.max.apply(null,old.map(function(x){return x.v;}));if(before>0&&now<before*.85)return {kind:'steady',head:'Keep the target steady',body:'Recent performance is down. Check technique, load changes and recovery before increasing the target.'};}
-  if(FAMOF[id]){var f=FAM[FAMOF[id]],fr=famRank(FAMOF[id]),ci=clearInfo(id);if(ci){var previous=null;f.steps.forEach(function(st){if(st.id===id&&stepEvidence(st).confirmed)previous=st;});if(previous&&fr.next&&fr.next.id!==id&&stepEvidence(previous).dates.filter(function(d){return ago(d)<=42;}).length>=2)return {kind:'swap',head:'Explore '+EX[fr.next.id].n,body:'You repeated the milestone on two training days. Try short, controlled sets of the next variation when fresh. Keep easier work if the new shape is not yet consistent.',swap:fr.next.id};if(e.k!=='load')return null;}}
+  if(FAMOF[id]){var f=FAM[FAMOF[id]],fr=famRank(FAMOF[id]),ci=clearInfo(id);if(ci){var previous=null;f.steps.forEach(function(st){if(st.id===id&&stepEvidence(st).confirmed)previous=st;});if(previous&&fr.i>=0&&f.steps[fr.i].id===id&&stepEvidence(f.steps[fr.i]).confirmed&&fr.next&&fr.next.id!==id&&stepEvidence(previous).dates.filter(function(d){return ago(d)<=42;}).length>=2)return {kind:'swap',head:'Explore '+EX[fr.next.id].n,body:'You repeated the milestone on two training days. Try short, controlled sets of the next variation when fresh. Keep easier work if the new shape is not yet consistent.',swap:fr.next.id};if(e.k!=='load')return null;}}
   if(h.length<2)return null;
   if(e.k==='hold'){var goal=e.goal||30;if(recent.filter(function(x){return completedTarget(x,id,goal);}).length>=2)return {kind:'step',head:'Explore the next progression',body:'You completed the prescribed sets at '+goal+'s on two recent days. Try '+e.prog+' with a manageable range and clean technique.'};return null;}
   if(e.k==='load'){if(id==='assistPull'||id==='assistDip')return {kind:'steady',head:'Reduce assistance gradually',body:'The kg value is assistance: less assistance is harder. Keep the same machine and range, and lower assistance by its smallest step after every prescribed set reaches the top of the rep range on two training days.'};var target=num(planKg(id)),base=Number.isFinite(target)?target:Math.max.apply(null,recent.map(function(x){return x.kg;}));if(!(base>0))return null;if(recent.filter(function(x){return completedTarget(x,id,r.hi,base);}).length<2)return null;var inc=Math.min(loadStep(id),Math.max(.25,Math.round(base*.05*4)/4)),next=Math.round((base+inc)*100)/100,t=exTarget(id);return {kind:'load',head:'Try '+next+' kg',body:'Every prescribed set reached '+r.hi+' reps at '+base+' kg on two recent training days. Use the nearest available small increment and keep the range controlled.',newT:planKg(id)?t.replace(/(?:\+|·\s*)\d+(?:\.\d+)?\s*kg/,'· '+next+' kg'):t+' · '+next+' kg'};}
@@ -1911,14 +1911,14 @@ function famBlock(key){
   h+='</div>';
   if(r.next){
     var inPlan=list(curType()),from=null;
-    f.steps.forEach(function(st){ if(inPlan.indexOf(st.id)>=0&&stepEvidence(st).confirmed)from=st.id; });
+    f.steps.forEach(function(st,j){ if(j===r.i&&inPlan.indexOf(st.id)>=0&&stepEvidence(st).confirmed)from=st.id; });
     if(from&&from!==r.next.id&&inPlan.indexOf(r.next.id)<0)
       h+='<button class="sug-btn go" data-act="applyswap" data-ex="'+from+'" data-to="'+r.next.id+'">'+
          badge(Math.min(5,r.i+1),18)+'Swap in '+EX[r.next.id].n+'</button>';
   }
   h+='<div class="rk-adv"><b>Focus now:</b> '+f.focus[Math.max(0,r.i<5?r.i+1:5)]+'</div>'+
     '<div class="rk-src">Your rank is the hardest rung you have cleared, not how far past an easy one you are. '+
-    'More of the same does not move you up \u2014 the next rung does. Only targets recorded on two different training days count as cleared. '+
+    'More of the same does not move you up \u2014 the next rung does. One saved clean set at the target earns that level directly; earlier exercises are not required. '+
     'A harder completed rung sets your rank, but does not fabricate results for earlier rungs. These are app milestones, not universal standards. Log clean form only; the app cannot assess technique.</div>';
   return h+'</div>';
 }
@@ -1959,7 +1959,7 @@ function rankBlock(id){
   return h+'</div>';
 }
 /* for a skill, the target is whatever ends the level you are on */
-function famMeter(id){var key=FAMOF[id],f=FAM[key],fr=famRank(key),ci=clearInfo(id);var goal=ci.confirmed?'Milestone earned':ci.reached?'1 of 2 days confirmed':stepFmt(ci.st)+' · '+RANKS[ci.j];var message=ci.confirmed?(fr.next?'Next milestone: '+EX[fr.next.id].n+' · '+stepFmt(fr.next)+'. Keep the current variation as supporting work.':'All milestones earned. Refine technique and maintain your strength.'):(ci.reached?'Target reached. Repeat on a different training day with the same clean form to earn this level.':'Build consistent, controlled sets. Only log time or reps you can hold with the stated technique.');return '<div class="meter">'+metHead(ci.best>0?valFmt(ci.u,ci.best)+' best':'Your next milestone',goal)+tierTrack(fr.i,fr.pct)+'<div class="meter-msg">'+message+'</div></div>';}
+function famMeter(id){var key=FAMOF[id],f=FAM[key],fr=famRank(key),ci=clearInfo(id);var goal=ci.reached?RANKS[ci.j]+' earned':stepFmt(ci.st)+' · '+RANKS[ci.j];var message=ci.reached?(ci.confirmed?'Repeated on two training days. ':'Level earned from your saved set. Repeat on another training day before progressing. ')+(fr.next?'Next milestone: '+EX[fr.next.id].n+' · '+stepFmt(fr.next)+'.':'Highest level reached. Refine technique and maintain your strength.'):'Reach this exercise’s threshold to earn its level directly. Earlier exercises are not required.';return '<div class="meter">'+metHead(ci.best>0?valFmt(ci.u,ci.best)+' best':'Your next milestone',goal)+tierTrack(fr.i,fr.pct)+'<div class="meter-msg">'+message+'</div></div>';}
 function exCard(id,i,n,type){
   var e=EX[id];if(!e)return "";
   var sets=log[id]||[],u=e.k==="hold"?"s":e.k==="mins"?"min":e.k==="load"?"":e.unit||"reps",h="";
@@ -2564,7 +2564,7 @@ function summaryText(){
 
 /* ============ guide ============ */
 function viewGuide(){
-  var rules=['Practise demanding skills while fresh. Follow with strength work and accessories.','End a set when you lose the intended technique. Count only controlled reps or seconds.','Rest enough to repeat quality work. Two to three minutes is a useful starting point for hard sets.','A skill milestone is earned by meeting its target on two different training days.','Use manageable increases. Reduce volume when performance, soreness or motivation indicate poor recovery.','Pain is a reason to stop or modify the movement. Persistent or worsening symptoms deserve professional assessment.','The default week includes two rest days. Adjust the plan to your recovery and other sport.','Do not cram missed training into the next day. Resume the schedule at a manageable workload.'];
+  var rules=['Practise demanding skills while fresh. Follow with strength work and accessories.','End a set when you lose the intended technique. Count only controlled reps or seconds.','Rest enough to repeat quality work. Two to three minutes is a useful starting point for hard sets.','Earn a skill level with one saved clean set at its target. Repeat on another day before progressing.','Use manageable increases. Reduce volume when performance, soreness or motivation indicate poor recovery.','Pain is a reason to stop or modify the movement. Persistent or worsening symptoms deserve professional assessment.','The default week includes two rest days. Adjust the plan to your recovery and other sport.','Do not cram missed training into the next day. Resume the schedule at a manageable workload.'];
   var rs=reviewData(6);
   var anyT=false;for(var q in S.targets)anyT=true;
 
@@ -2598,7 +2598,7 @@ function viewGuide(){
     '<textarea id="sum" readonly>'+esc(summaryText())+'</textarea>'+
     '<button class="cta soft sm" data-act="copysum" style="margin-top:10px">Copy summary</button></div>'+
     '<div class="lbl"><span>How your progression works</span></div><div class="card pad"><div class="prose">'+
-    '<b>Skill levels.</b> Meet the exact ladder target on two separate training days. A big single attempt or two sets on one day does not unlock a level. Lower unlogged rungs remain unearned. These are app milestones, not competition standards.'+
+    '<b>Skill levels.</b> Meet any rung’s exact target in one saved clean set to earn that level directly. For example, a 15-second tuck planche earns Gold without logging frog stands or planche leans. Lower unlogged rungs remain unearned and do not block your rank. Repeat the current milestone on another training day before the app suggests a harder variation. These are app milestones, not competition standards.'+
     '<br><br><b>Weighted milestones.</b> The listed added load must be lifted for at least three clean reps. Count only completed sets, with reps and weight taken from the same set.'+
     '<br><br><b>Reps and load.</b> Complete every prescribed set at the top of the range on two of your last three training days within six weeks. Suggestions use a small load increment or one extra rep. Assisted machines work in the opposite direction: less assistance is harder.'+
     '<br><br><b>Readiness.</b> Recent drops in reps pause suggestions. This is a simple signal, not a fatigue diagnosis; load, range and technique also change performance. A historical level does not mean you are ready for harder work today.'+
@@ -2611,7 +2611,7 @@ function viewGuide(){
     '<br><br><b>Strength.</b> Bodyweight control leads into manageable added load. Explosive dips and ring variations are optional supporting work. A weighted dip does not by itself establish planche readiness.'+
     '<br><br><b>Recovery and nutrition.</b> Your calorie, protein and weight targets are editable starting values. Use trends over several weeks and adjust for your goals, appetite and training. The app does not prescribe an individual diet or predict a date for reaching your weight goal.</div></div>'+
     '<div class="lbl"><span>Coaching references</span></div><div class="card pad"><div class="prose">'+
-    'The review uses <a href="https://acsm.org/resistance-training-guidelines-update-2026/" target="_blank" rel="noopener">ACSM resistance-training guidance</a>, <a href="https://gmb.io/planche/" target="_blank" rel="noopener">GMB’s planche progressions</a> and the <a href="https://www.acefitness.org/resources/everyone/exercise-library/" target="_blank" rel="noopener">ACE exercise library</a> as general references. Exact rung targets, two-day confirmation and suggestion rules are app design choices, not validated universal thresholds.'+
+    'The review uses <a href="https://acsm.org/resistance-training-guidelines-update-2026/" target="_blank" rel="noopener">ACSM resistance-training guidance</a>, <a href="https://gmb.io/planche/" target="_blank" rel="noopener">GMB’s planche progressions</a> and the <a href="https://www.acefitness.org/resources/everyone/exercise-library/" target="_blank" rel="noopener">ACE exercise library</a> as general references. Exact rung targets, two-day readiness checks and suggestion rules are app design choices, not validated universal thresholds.'+
     '<br><br>Technique cues are general coaching prompts. Adapt them to your range and equipment, and use a qualified coach for complex skills. Strength badges are indicative personal-tracking benchmarks and are not a rating of your health or potential.</div></div>'+
     '<div class="lbl"><span>Backup</span></div><div class="card pad">'+
     '<div class="prose" style="margin-bottom:11px">Everything lives on this device, including your schedule and custom sessions. Copy this out before you clear browser data or switch phones.</div>'+
