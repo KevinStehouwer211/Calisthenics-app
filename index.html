@@ -518,6 +518,13 @@ button,input,select,textarea{font:inherit}button,a,input,select{touch-action:man
 @media(min-width:1180px){.nav{justify-content:flex-start}.nb,.nb.on{flex:none;flex-direction:row;justify-content:flex-start;padding:0 15px}.nav-brand .brand{gap:9px;font-size:18px}.nav-brand .brand small{font-size:8px;letter-spacing:1.2px}.nav-brand .brand-mark{width:30px;height:34px}.nav-brand{margin-left:3px;margin-right:0}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
+.ex-history{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 20px 0}
+.ex-record{padding:12px 14px;border-radius:12px;background:#F3F5EF;border:1px solid #E6EADF;min-width:0}
+.ex-record.best{background:#EAF1E2;border-color:#D8E4CD}
+.ex-record-label{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.ex-record-value{display:block;font-family:var(--disp);font-size:clamp(16px,4vw,22px);font-weight:600;line-height:1.3;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ex-record-date{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+@media(max-width:400px){.ex-history{margin-left:16px;margin-right:16px;gap:8px}.ex-record{padding:10px}}
 </style>
 </head>
 <body>
@@ -1960,6 +1967,37 @@ function rankBlock(id){
 }
 /* for a skill, the target is whatever ends the level you are on */
 function famMeter(id){var key=FAMOF[id],f=FAM[key],fr=famRank(key),ci=clearInfo(id);var goal=ci.reached?RANKS[ci.j]+' earned':stepFmt(ci.st)+' · '+RANKS[ci.j];var message=ci.reached?(ci.confirmed?'Repeated on two training days. ':'Level earned from your saved set. Repeat on another training day before progressing. ')+(fr.next?'Next milestone: '+EX[fr.next.id].n+' · '+stepFmt(fr.next)+'.':'Highest level reached. Refine technique and maintain your strength.'):'Reach this exercise’s threshold to earn its level directly. Earlier exercises are not required.';return '<div class="meter">'+metHead(ci.best>0?valFmt(ci.u,ci.best)+' best':'Your next milestone',goal)+tierTrack(fr.i,fr.pct)+'<div class="meter-msg">'+message+'</div></div>';}
+/* Keep load and reps from the same completed set. Dates take precedence over
+   insertion order, since sessions can be entered retrospectively. */
+function exerciseRecords(id){
+  var e=EX[id],best=null,last=null,assisted=id==='assistPull'||id==='assistDip';
+  S.sessions.forEach(function(session,si){
+    if(ago(session.d)<0)return;
+    ((session.ex||{})[id]||[]).forEach(function(set,j){
+      var v=num(set.v),kg=num(set.kg);
+      if(!Number.isFinite(v)||v<=0||((e.k==='load'||e.k==='reps')&&!e.unit&&v%1!==0))return;
+      if(e.k==='load'&&(!Number.isFinite(kg)||kg<0))return;
+      var entry={v:v,kg:kg,d:session.d,t:num(set.t)||0,si:si,j:j};
+      if(!last||entry.d>last.d||(entry.d===last.d&&(entry.t>last.t||
+        (entry.t===last.t&&(si>last.si||(si===last.si&&j>last.j))))))last=entry;
+      if(set.clean===false)return;
+      if(!best||(e.k==='load'?(kg!==best.kg?(assisted?kg<best.kg:kg>best.kg):v>best.v):v>best.v))best=entry;
+    });
+  });
+  return {best:best,last:last};
+}
+function exerciseHistory(id){
+  var e=EX[id],records=exerciseRecords(id),assisted=id==='assistPull'||id==='assistDip';
+  var unit=e.k==='hold'?'s':e.k==='mins'?'min':e.unit||'reps';
+  var rule=e.k==='load'?(assisted?'Lowest assistance; most reps at that assistance.':'Highest weight; most reps at that weight.'):'Highest recorded '+unit+'.';
+  return '<div class="ex-history" aria-label="Saved exercise records">'+['best','last'].map(function(key){
+    var set=records[key],value=set?(e.k==='load'?set.kg+' kg × '+set.v+' reps':set.v+' '+unit):'—';
+    return '<div class="ex-record '+key+'" title="'+(key==='best'?rule:'Most recent saved set.')+'">'+
+      '<span class="ex-record-label">'+(key==='best'?'Best set':'Last set')+'</span>'+
+      '<span class="ex-record-value">'+esc(value)+'</span>'+
+      '<span class="ex-record-date">'+(set?esc(fmtD(set.d)+' '+set.d.slice(0,4))+(assisted?' · assistance':''):'No saved sets yet')+'</span></div>';
+  }).join('')+'</div>';
+}
 function exCard(id,i,n,type){
   var e=EX[id];if(!e)return "";
   var sets=log[id]||[],u=e.k==="hold"?"s":e.k==="mins"?"min":e.k==="load"?"":e.unit||"reps",h="";
@@ -1983,7 +2021,7 @@ function exCard(id,i,n,type){
     '<button class="icb" data-act="info" data-ex="'+id+'">'+I.info+'</button>'+
     '<button class="icb dngr" data-act="rmex" data-ex="'+id+'" data-t="'+type+'">'+I.x+'</button></div></div>'+
     '<div class="ex-tags"><span class="chip">'+esc(exTarget(id))+(S.targets[id]?" · edited":"")+'</span>'+rankPill(id)+'</div>'+
-    '<div class="sets">'+h+'</div><div class="focus-mini"><b>Focus</b> · '+esc(FORM[id].f[0])+'</div>'+((FAMOF[id]||STD[id]||e.k==="hold")?meter(id):'')+'</div>';
+    exerciseHistory(id)+'<div class="sets">'+h+'</div><div class="focus-mini"><b>Focus</b> · '+esc(FORM[id].f[0])+'</div>'+((FAMOF[id]||STD[id]||e.k==="hold")?meter(id):'')+'</div>';
 }
 
 /* ============ nutrition ============ */
